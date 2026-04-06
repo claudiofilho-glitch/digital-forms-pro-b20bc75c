@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench } from "lucide-react";
+import logo from "@/assets/logo-interative.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
