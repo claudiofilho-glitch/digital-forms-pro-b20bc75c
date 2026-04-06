@@ -96,6 +96,10 @@ export default function OrderDetail() {
 
       <Card>
         <CardHeader>
+          {/* Logo for print */}
+          <div className="hidden print:flex justify-center mb-4">
+            <img src={logo} alt="Interative Tecnosegurança" className="h-14 w-auto" />
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-mono text-muted-foreground">OS #{order.order_number}</p>

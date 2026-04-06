@@ -23,10 +23,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Wrench className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="hidden sm:inline">OS Manager</span>
+            <img src={logo} alt="Interative Tecnosegurança" className="h-9 w-auto" />
           </Link>
 
           <nav className="flex items-center gap-1">
