@@ -14,16 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      service_orders: {
+        Row: {
+          assigned_name: string | null
+          assigned_to: string | null
+          completion_date: string | null
+          created_at: string
+          description: string
+          id: string
+          location: string | null
+          notes: string | null
+          order_number: number
+          photos: string[] | null
+          priority: Database["public"]["Enums"]["os_priority"]
+          requester_id: string
+          requester_name: string
+          scheduled_date: string | null
+          service_type: string
+          status: Database["public"]["Enums"]["os_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_name?: string | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          order_number?: number
+          photos?: string[] | null
+          priority?: Database["public"]["Enums"]["os_priority"]
+          requester_id: string
+          requester_name?: string
+          scheduled_date?: string | null
+          service_type?: string
+          status?: Database["public"]["Enums"]["os_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_name?: string | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          order_number?: number
+          photos?: string[] | null
+          priority?: Database["public"]["Enums"]["os_priority"]
+          requester_id?: string
+          requester_name?: string
+          scheduled_date?: string | null
+          service_type?: string
+          status?: Database["public"]["Enums"]["os_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "technician" | "user"
+      os_priority: "low" | "medium" | "high" | "urgent"
+      os_status: "pending" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +265,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "technician", "user"],
+      os_priority: ["low", "medium", "high", "urgent"],
+      os_status: ["pending", "in_progress", "completed", "cancelled"],
+    },
   },
 } as const
