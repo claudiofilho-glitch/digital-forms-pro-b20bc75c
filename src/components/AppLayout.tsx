@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, PlusCircle, LogOut, User, Wrench, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/logo-interative.png";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { profile, role, signOut } = useAuth();
