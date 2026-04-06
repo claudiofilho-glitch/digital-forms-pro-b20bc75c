@@ -9,6 +9,7 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import NewOrder from "@/pages/NewOrder";
 import OrderDetail from "@/pages/OrderDetail";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/nova-os" element={<ProtectedRoute><NewOrder /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/os/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

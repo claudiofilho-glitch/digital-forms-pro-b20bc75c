@@ -2,17 +2,18 @@ import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, PlusCircle, LogOut, User, Wrench } from "lucide-react";
+import { ClipboardList, PlusCircle, LogOut, User, Wrench, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
-  { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
-];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { profile, role, signOut } = useAuth();
   const location = useLocation();
+
+  const navItems = [
+    { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
+    { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
+    ...(role === "admin" ? [{ to: "/admin", label: "Usuários", icon: Shield }] : []),
+  ];
 
   const roleLabel = role === "admin" ? "Administrador" : role === "technician" ? "Técnico" : "Usuário";
 
