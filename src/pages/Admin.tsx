@@ -36,7 +36,9 @@ export default function Admin() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
 
-  if (role !== "admin") return <Navigate to="/" replace />;
+  useEffect(() => {
+    if (role === "admin") fetchUsers();
+  }, [role]);
 
   useEffect(() => {
     fetchUsers();
