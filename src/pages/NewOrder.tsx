@@ -105,7 +105,7 @@ export default function NewOrder() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="location">Local</Label>
-                <Input id="location" value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex: Bloco A, sala 102" />
+                <Input id="location" value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex: Recepção A" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="date">Data prevista</Label>
