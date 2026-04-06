@@ -1,0 +1,62 @@
+import { ReactNode } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { ClipboardList, PlusCircle, LogOut, User, Wrench } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
+  { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
+];
+
+export default function AppLayout({ children }: { children: ReactNode }) {
+  const { profile, role, signOut } = useAuth();
+  const location = useLocation();
+
+  const roleLabel = role === "admin" ? "Administrador" : role === "technician" ? "Técnico" : "Usuário";
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+        <div className="container flex h-16 items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Wrench className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="hidden sm:inline">OS Manager</span>
+          </Link>
+
+          <nav className="flex items-center gap-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <Link key={to} to={to}>
+                <Button
+                  variant={location.pathname === to ? "default" : "ghost"}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{label}</span>
+                </Button>
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex flex-col items-end text-xs">
+              <span className="font-medium">{profile?.full_name || "Usuário"}</span>
+              <span className="text-muted-foreground">{roleLabel}</span>
+            </div>
+            <Button variant="ghost" size="icon" onClick={signOut} title="Sair">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        <div className="container py-6">{children}</div>
+      </main>
+    </div>
+  );
+}
