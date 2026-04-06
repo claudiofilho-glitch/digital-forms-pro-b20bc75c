@@ -40,9 +40,7 @@ export default function Admin() {
     if (role === "admin") fetchUsers();
   }, [role]);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  if (role !== "admin") return <Navigate to="/" replace />;
 
   const fetchUsers = async () => {
     const [profilesRes, rolesRes] = await Promise.all([

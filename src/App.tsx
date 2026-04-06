@@ -45,6 +45,7 @@ const App = () => (
             <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/nova-os" element={<ProtectedRoute><NewOrder /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/os/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
