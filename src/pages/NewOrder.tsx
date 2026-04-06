@@ -67,12 +67,12 @@ export default function NewOrder() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
-              <Input id="title" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex: Vazamento no banheiro do 2º andar" required />
+              <Input id="title" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex:Catraca girando livre" required />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">Descrição</Label>
-              <Textarea id="description" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Descreva o problema com detalhes..." rows={4} />
+              <Textarea id="description" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Descreva brevemente o problema..." rows={4} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
