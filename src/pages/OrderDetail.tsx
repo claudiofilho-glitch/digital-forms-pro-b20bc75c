@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench } from "lucide-react";
+import logo from "@/assets/logo-interative.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
@@ -95,6 +96,10 @@ export default function OrderDetail() {
 
       <Card>
         <CardHeader>
+          {/* Logo for print */}
+          <div className="hidden print:flex justify-center mb-4">
+            <img src={logo} alt="Interative Tecnosegurança" className="h-14 w-auto" />
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-mono text-muted-foreground">OS #{order.order_number}</p>

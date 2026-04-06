@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Wrench } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@/assets/logo-interative.png";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,8 +40,8 @@ export default function Auth() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-            <Wrench className="h-7 w-7 text-primary-foreground" />
+          <div className="mx-auto mb-4">
+            <img src={logo} alt="Interative Tecnosegurança" className="h-16 w-auto mx-auto" />
           </div>
           <CardTitle className="text-2xl font-bold">OS Manager</CardTitle>
           <CardDescription>
