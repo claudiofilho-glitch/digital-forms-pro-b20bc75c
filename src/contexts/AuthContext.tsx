@@ -29,17 +29,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async (userId: string) => {
-    const [rolesRes, profileRes] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", userId),
-      supabase.from("profiles").select("full_name, phone").eq("user_id", userId).single(),
-    ]);
-    if (rolesRes.data?.length) {
-      const roles = rolesRes.data.map((r) => r.role);
-      if (roles.includes("admin")) setRole("admin");
-      else if (roles.includes("technician")) setRole("technician");
-      else setRole("user");
+    try {
+      const [rolesRes, profileRes] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", userId),
+        supabase.from("profiles").select("full_name, phone").eq("user_id", userId).single(),
+      ]);
+      if (rolesRes.data?.length) {
+        const roles = rolesRes.data.map((r) => r.role);
+        if (roles.includes("admin")) setRole("admin");
+        else if (roles.includes("technician")) setRole("technician");
+        else setRole("user");
+      } else {
+        setRole("user");
+      }
+      if (profileRes.data) setProfile(profileRes.data);
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      setRole("user");
+      setProfile(null);
     }
-    if (profileRes.data) setProfile(profileRes.data);
   };
 
   useEffect(() => {
