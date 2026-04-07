@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -45,6 +78,8 @@ export type Database = {
         Row: {
           assigned_name: string | null
           assigned_to: string | null
+          client_id: string | null
+          client_name: string | null
           completion_date: string | null
           created_at: string
           description: string
@@ -65,6 +100,8 @@ export type Database = {
         Insert: {
           assigned_name?: string | null
           assigned_to?: string | null
+          client_id?: string | null
+          client_name?: string | null
           completion_date?: string | null
           created_at?: string
           description?: string
@@ -85,6 +122,8 @@ export type Database = {
         Update: {
           assigned_name?: string | null
           assigned_to?: string | null
+          client_id?: string | null
+          client_name?: string | null
           completion_date?: string | null
           created_at?: string
           description?: string
@@ -102,7 +141,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
