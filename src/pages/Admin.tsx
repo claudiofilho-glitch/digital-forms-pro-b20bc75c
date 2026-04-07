@@ -31,7 +31,7 @@ const ROLE_CONFIG: Record<AppRole, { label: string; icon: typeof Shield; class: 
 };
 
 export default function Admin() {
-  const { role } = useAuth();
+  const { role, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -41,9 +41,18 @@ export default function Admin() {
     if (role === "admin") fetchUsers();
   }, [role]);
 
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
   if (role !== "admin") return <Navigate to="/" replace />;
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const [profilesRes, rolesRes] = await Promise.all([
         supabase.from("profiles").select("user_id, full_name, phone, created_at"),
