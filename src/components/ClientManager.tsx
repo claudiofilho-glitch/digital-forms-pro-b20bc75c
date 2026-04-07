@@ -38,7 +38,7 @@ export default function ClientManager() {
 
   const fetchClients = async () => {
     const { data } = await supabase.from("clients").select("*").order("name");
-    setClients((data as Client[]) || []);
+    setClients((data as unknown as Client[]) || []);
     setLoading(false);
   };
 
@@ -80,14 +80,14 @@ export default function ClientManager() {
     };
 
     if (editingId) {
-      const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
+      const { error } = await supabase.from("clients").update(payload as any).eq("id", editingId);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Cliente atualizado!" });
       }
     } else {
-      const { error } = await supabase.from("clients").insert(payload);
+      const { error } = await supabase.from("clients").insert(payload as any);
       if (error) {
         toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
       } else {
