@@ -241,7 +241,7 @@ export default function ClientManager() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
                       Nenhum cliente cadastrado.
                     </TableCell>
                   </TableRow>
