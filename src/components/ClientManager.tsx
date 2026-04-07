@@ -230,8 +230,9 @@ export default function ClientManager() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead className="hidden sm:table-cell">E-mail</TableHead>
+                 <TableHead>Nome</TableHead>
+                  <TableHead className="hidden sm:table-cell">Contato</TableHead>
+                  <TableHead className="hidden sm:table-cell">CPF/CNPJ</TableHead>
                   <TableHead className="hidden md:table-cell">Telefone</TableHead>
                   <TableHead className="hidden lg:table-cell">Endereço</TableHead>
                   <TableHead className="w-[100px]">Ações</TableHead>
