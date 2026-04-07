@@ -16,11 +16,13 @@ interface Client {
   email: string | null;
   phone: string | null;
   address: string | null;
+  contact: string | null;
+  document: string | null;
   notes: string | null;
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", address: "", contact: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
