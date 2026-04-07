@@ -44,33 +44,39 @@ export default function Admin() {
   if (role !== "admin") return <Navigate to="/" replace />;
 
   const fetchUsers = async () => {
-    const [profilesRes, rolesRes] = await Promise.all([
-      supabase.from("profiles").select("user_id, full_name, phone, created_at"),
-      supabase.from("user_roles").select("user_id, role"),
-    ]);
+    try {
+      const [profilesRes, rolesRes] = await Promise.all([
+        supabase.from("profiles").select("user_id, full_name, phone, created_at"),
+        supabase.from("user_roles").select("user_id, role"),
+      ]);
 
-    const profiles = profilesRes.data || [];
-    const roles = rolesRes.data || [];
+      const profiles = profilesRes.data || [];
+      const roles = rolesRes.data || [];
 
-    const roleMap = new Map<string, AppRole>();
-    for (const r of roles) {
-      const current = roleMap.get(r.user_id);
-      if (!current || r.role === "admin" || (r.role === "technician" && current === "user")) {
-        roleMap.set(r.user_id, r.role);
+      const roleMap = new Map<string, AppRole>();
+      for (const r of roles) {
+        const current = roleMap.get(r.user_id);
+        if (!current || r.role === "admin" || (r.role === "technician" && current === "user")) {
+          roleMap.set(r.user_id, r.role);
+        }
       }
+
+      const merged: UserRow[] = profiles.map((p) => ({
+        user_id: p.user_id,
+        full_name: p.full_name,
+        phone: p.phone,
+        role: roleMap.get(p.user_id) || "user",
+        created_at: p.created_at,
+      }));
+
+      merged.sort((a, b) => a.full_name.localeCompare(b.full_name));
+      setUsers(merged);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      toast({ title: "Erro", description: "Não foi possível carregar usuários.", variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-
-    const merged: UserRow[] = profiles.map((p) => ({
-      user_id: p.user_id,
-      full_name: p.full_name,
-      phone: p.phone,
-      role: roleMap.get(p.user_id) || "user",
-      created_at: p.created_at,
-    }));
-
-    merged.sort((a, b) => a.full_name.localeCompare(b.full_name));
-    setUsers(merged);
-    setLoading(false);
   };
 
   const changeRole = async (userId: string, newRole: AppRole) => {
