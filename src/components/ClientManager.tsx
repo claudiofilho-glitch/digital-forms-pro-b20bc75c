@@ -16,11 +16,13 @@ interface Client {
   email: string | null;
   phone: string | null;
   address: string | null;
+  contact: string | null;
+  document: string | null;
   notes: string | null;
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", address: "", contact: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -56,6 +58,8 @@ export default function ClientManager() {
       email: client.email || "",
       phone: client.phone || "",
       address: client.address || "",
+      contact: client.contact || "",
+      document: client.document || "",
       notes: client.notes || "",
     });
     setDialogOpen(true);
@@ -73,6 +77,8 @@ export default function ClientManager() {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       address: form.address.trim() || null,
+      contact: form.contact.trim() || null,
+      document: form.document.trim() || null,
       notes: form.notes.trim() || null,
     };
 
@@ -151,6 +157,22 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label>Contato</Label>
+                  <Input
+                    value={form.contact}
+                    onChange={(e) => update("contact", e.target.value)}
+                    placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CPF/CNPJ</Label>
+                  <Input
+                    value={form.document}
+                    onChange={(e) => update("document", e.target.value)}
+                    placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>E-mail</Label>
                   <Input
                     value={form.email}
@@ -208,8 +230,9 @@ export default function ClientManager() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead className="hidden sm:table-cell">E-mail</TableHead>
+                 <TableHead>Nome</TableHead>
+                  <TableHead className="hidden sm:table-cell">Contato</TableHead>
+                  <TableHead className="hidden sm:table-cell">CPF/CNPJ</TableHead>
                   <TableHead className="hidden md:table-cell">Telefone</TableHead>
                   <TableHead className="hidden lg:table-cell">Endereço</TableHead>
                   <TableHead className="w-[100px]">Ações</TableHead>
@@ -218,16 +241,19 @@ export default function ClientManager() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
                       Nenhum cliente cadastrado.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filtered.map((c) => (
-                    <TableRow key={c.id}>
+                     <TableRow key={c.id}>
                       <TableCell className="font-medium">{c.name}</TableCell>
                       <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                        {c.email || "—"}
+                        {c.contact || "—"}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                        {c.document || "—"}
                       </TableCell>
                       <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                         {c.phone || "—"}
