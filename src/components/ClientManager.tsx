@@ -157,6 +157,22 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label>Contato</Label>
+                  <Input
+                    value={form.contact}
+                    onChange={(e) => update("contact", e.target.value)}
+                    placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CPF/CNPJ</Label>
+                  <Input
+                    value={form.document}
+                    onChange={(e) => update("document", e.target.value)}
+                    placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>E-mail</Label>
                   <Input
                     value={form.email}
