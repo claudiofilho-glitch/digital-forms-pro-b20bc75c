@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,7 @@ export default function NewOrder() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -27,7 +28,14 @@ export default function NewOrder() {
     priority: "medium" as Priority,
     location: "",
     scheduled_date: "",
+    client_id: "",
   });
+
+  useEffect(() => {
+    supabase.from("clients").select("id, name").order("name").then(({ data }) => {
+      setClients((data as any[]) || []);
+    });
+  }, []);
 
   const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
 
@@ -35,6 +43,8 @@ export default function NewOrder() {
     e.preventDefault();
     if (!user) return;
     setLoading(true);
+
+    const selectedClient = clients.find((c) => c.id === form.client_id);
 
     const { error } = await supabase.from("service_orders").insert({
       title: form.title,
@@ -45,7 +55,9 @@ export default function NewOrder() {
       scheduled_date: form.scheduled_date || null,
       requester_id: user.id,
       requester_name: profile?.full_name || user.email || "",
-    });
+      client_id: form.client_id || null,
+      client_name: selectedClient?.name || "",
+    } as any);
 
     if (error) {
       toast({ title: "Erro ao criar OS", description: error.message, variant: "destructive" });
@@ -65,6 +77,18 @@ export default function NewOrder() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label>Cliente</Label>
+              <Select value={form.client_id} onValueChange={(v) => update("client_id", v)}>
+                <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
+                <SelectContent>
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
               <Input id="title" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex:Catraca girando livre" required />
