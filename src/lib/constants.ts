@@ -13,13 +13,8 @@ export const PRIORITY_MAP = {
 } as const;
 
 export const SERVICE_TYPES = [
-  "Elétrica",
-  "Hidráulica",
-  "Pintura",
-  "Alvenaria",
-  "Ar-condicionado",
-  "Limpeza",
-  "Jardinagem",
+  "Manutenção Preventiva",
+  "Manutenção Corretiva",
   "TI / Rede",
-  "Geral",
+  "Atendimento Geral",
 ] as const;
