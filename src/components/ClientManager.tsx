@@ -247,10 +247,13 @@ export default function ClientManager() {
                   </TableRow>
                 ) : (
                   filtered.map((c) => (
-                    <TableRow key={c.id}>
+                     <TableRow key={c.id}>
                       <TableCell className="font-medium">{c.name}</TableCell>
                       <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                        {c.email || "—"}
+                        {c.contact || "—"}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                        {c.document || "—"}
                       </TableCell>
                       <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                         {c.phone || "—"}
