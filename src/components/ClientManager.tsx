@@ -15,12 +15,13 @@ interface Client {
   name: string;
   email: string | null;
   phone: string | null;
+  document: string | null;
   address: string | null;
   notes: string | null;
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", document: "", address: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -37,7 +38,7 @@ export default function ClientManager() {
 
   const fetchClients = async () => {
     const { data } = await supabase.from("clients").select("*").order("name");
-    setClients((data as Client[]) || []);
+    setClients((data as unknown as Client[]) || []);
     setLoading(false);
   };
 
@@ -55,6 +56,7 @@ export default function ClientManager() {
       name: client.name,
       email: client.email || "",
       phone: client.phone || "",
+      document: client.document || "",
       address: client.address || "",
       notes: client.notes || "",
     });
@@ -72,19 +74,20 @@ export default function ClientManager() {
       name: form.name.trim(),
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
+      document: form.document.trim() || null,
       address: form.address.trim() || null,
       notes: form.notes.trim() || null,
     };
 
     if (editingId) {
-      const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
+      const { error } = await supabase.from("clients").update(payload as any).eq("id", editingId);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Cliente atualizado!" });
       }
     } else {
-      const { error } = await supabase.from("clients").insert(payload);
+      const { error } = await supabase.from("clients").insert(payload as any);
       if (error) {
         toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
       } else {
@@ -169,9 +172,9 @@ export default function ClientManager() {
                 <div className="space-y-2">
                   <Label>CPF/CNPJ</Label>
                   <Input
-                    value={form.number}
-                    onChange={(e) => update("number", e.target.value)}
-                    placeholder="000000000000000"
+                    value={form.document}
+                    onChange={(e) => update("document", e.target.value)}
+                    placeholder="000.000.000-00"
                   />
                 </div>
                 <div className="space-y-2">
