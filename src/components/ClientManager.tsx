@@ -167,12 +167,13 @@ export default function ClientManager() {
                   />
                 </div>
                 <div className="space-y-2">
-                <Label>Endereço</Label>
-                <Input
-                  value={form.address}
-                  onChange={(e) => update("address", e.target.value)}
-                  placeholder="Endereço completo"
-                />
+                  <Label>Endereço</Label>
+                  <Input
+                    value={form.address}
+                    onChange={(e) => update("address", e.target.value)}
+                    placeholder="Endereço completo"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Observações</Label>
