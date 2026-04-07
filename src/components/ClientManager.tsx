@@ -77,6 +77,8 @@ export default function ClientManager() {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       address: form.address.trim() || null,
+      contact: form.contact.trim() || null,
+      document: form.document.trim() || null,
       notes: form.notes.trim() || null,
     };
 
