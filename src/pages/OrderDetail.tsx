@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2 } from "lucide-react";
 import logo from "@/assets/logo-interative.png";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -125,6 +125,7 @@ export default function OrderDetail() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InfoItem icon={Wrench} label="Tipo" value={order.service_type} />
+            <InfoItem icon={Building2} label="Cliente" value={(order as any).client_name || "—"} />
             <InfoItem icon={MapPin} label="Local" value={order.location || "—"} />
             <InfoItem icon={User} label="Solicitante" value={order.requester_name} />
             <InfoItem icon={User} label="Técnico" value={order.assigned_name || "Não atribuído"} />

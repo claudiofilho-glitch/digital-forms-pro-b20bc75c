@@ -124,10 +124,10 @@ export default function Dashboard() {
                 <TableRow>
                   <TableHead className="w-[80px]">Nº</TableHead>
                   <TableHead>Título</TableHead>
+                  <TableHead className="hidden md:table-cell">Cliente</TableHead>
                   <TableHead className="hidden md:table-cell">Tipo</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="hidden sm:table-cell">Prioridade</TableHead>
-                  <TableHead className="hidden lg:table-cell">Solicitante</TableHead>
                   <TableHead className="hidden lg:table-cell">Data</TableHead>
                   <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
@@ -135,7 +135,7 @@ export default function Dashboard() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
                       Nenhuma ordem de serviço encontrada.
                     </TableCell>
                   </TableRow>
@@ -149,6 +149,9 @@ export default function Dashboard() {
                         {order.title}
                       </TableCell>
                       <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                        {(order as any).client_name || "—"}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                         {order.service_type}
                       </TableCell>
                       <TableCell>
@@ -160,9 +163,6 @@ export default function Dashboard() {
                         <Badge variant="secondary" className={cn("text-xs", PRIORITY_MAP[order.priority].class)}>
                           {PRIORITY_MAP[order.priority].label}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
-                        {order.requester_name}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
                         {new Date(order.created_at).toLocaleDateString("pt-BR")}
