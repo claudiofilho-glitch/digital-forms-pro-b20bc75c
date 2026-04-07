@@ -108,9 +108,10 @@ export default function ClientManager() {
     }
   };
 
-  const filtered = clients.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.email || "").toLowerCase().includes(search.toLowerCase())
+  const filtered = clients.filter(
+    (c) =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      (c.email || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   if (loading) {
@@ -142,25 +143,62 @@ export default function ClientManager() {
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
                 <Label>Nome *</Label>
-                <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome do cliente" />
+                <Input
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  placeholder="Nome do cliente"
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>E-mail</Label>
-                  <Input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" />
+                  <Input
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
+                    placeholder="email@exemplo.com"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Telefone</Label>
-                  <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="(00) 00000-0000" />
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CPF/CNPJ</Label>
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contato</Label>
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    placeholder="(00) 00000-0000"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Endereço</Label>
-                <Input value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="Endereço completo" />
+                <Input
+                  value={form.address}
+                  onChange={(e) => update("address", e.target.value)}
+                  placeholder="Endereço completo"
+                />
               </div>
               <div className="space-y-2">
                 <Label>Observações</Label>
-                <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={3} placeholder="Informações adicionais..." />
+                <Textarea
+                  value={form.notes}
+                  onChange={(e) => update("notes", e.target.value)}
+                  rows={3}
+                  placeholder="Informações adicionais..."
+                />
               </div>
               <Button onClick={handleSave} disabled={saving} className="w-full">
                 {saving ? "Salvando..." : editingId ? "Atualizar" : "Criar Cliente"}
@@ -204,15 +242,26 @@ export default function ClientManager() {
                   filtered.map((c) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-medium">{c.name}</TableCell>
-                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">{c.email || "—"}</TableCell>
-                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">{c.phone || "—"}</TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">{c.address || "—"}</TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                        {c.email || "—"}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                        {c.phone || "—"}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                        {c.address || "—"}
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)}>
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(c.id)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive"
+                            onClick={() => handleDelete(c.id)}
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
