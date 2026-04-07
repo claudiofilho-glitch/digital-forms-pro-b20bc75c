@@ -58,6 +58,8 @@ export default function ClientManager() {
       email: client.email || "",
       phone: client.phone || "",
       address: client.address || "",
+      contact: client.contact || "",
+      document: client.document || "",
       notes: client.notes || "",
     });
     setDialogOpen(true);
