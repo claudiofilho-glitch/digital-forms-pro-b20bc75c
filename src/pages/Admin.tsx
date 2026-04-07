@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import ClientManager from "@/components/ClientManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -209,6 +210,9 @@ export default function Admin() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Client Management */}
+      <ClientManager />
     </div>
   );
 }
