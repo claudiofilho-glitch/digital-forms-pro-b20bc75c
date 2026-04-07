@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo-interative.png";
+import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -41,7 +41,7 @@ export default function Auth() {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <img src={logo} alt="Interative Tecnosegurança" className="h-16 w-auto mx-auto" />
+            <img src={logo} alt="Interative Tecnosegurança" className="h-16 w-auto mx-auto object-fill" />
           </div>
           <CardTitle className="text-2xl font-bold">OS Manager</CardTitle>
           <CardDescription>
