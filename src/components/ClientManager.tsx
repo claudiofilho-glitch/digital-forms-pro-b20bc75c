@@ -169,9 +169,9 @@ export default function ClientManager() {
                 <div className="space-y-2">
                   <Label>CPF/CNPJ</Label>
                   <Input
-                    value={form.phone}
-                    onChange={(e) => update("phone", e.target.value)}
-                    placeholder="(00) 00000-0000"
+                    value={form.number}
+                    onChange={(e) => update("number", e.target.value)}
+                    placeholder="000000000000000"
                   />
                 </div>
                 <div className="space-y-2">
