@@ -291,7 +291,7 @@ function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; valu
       </div>
       <div className="min-w-0">
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{label}</p>
-        <p className="text-sm font-medium text-foreground truncate">{value}</p>
+        <p className="text-sm font-medium text-foreground break-words">{value}</p>
       </div>
     </div>
   );
