@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2 } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -22,6 +22,7 @@ export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role, user } = useAuth();
+  const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [order, setOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,19 @@ export default function OrderDetail() {
 
   const handlePrint = () => window.print();
 
+  const handleSavePDF = async () => {
+    if (!cardRef.current || !order) return;
+    const html2canvas = (await import("html2canvas")).default;
+    const { jsPDF } = await import("jspdf");
+    const canvas = await html2canvas(cardRef.current, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+    pdf.save(`OS_${order.order_number}.pdf`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -89,16 +103,19 @@ export default function OrderDetail() {
         <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
+        <Button variant="outline" onClick={handleSavePDF} className="gap-2">
+          <FileDown className="h-4 w-4" /> Salvar PDF
+        </Button>
         <Button variant="outline" onClick={handlePrint} className="gap-2">
           <Printer className="h-4 w-4" /> Imprimir
         </Button>
       </div>
 
-      <Card>
+      <Card ref={cardRef}>
         <CardHeader>
           {/* Logo for print */}
           <div className="hidden print:flex justify-center mb-4">
-            <img src={logo} alt="Interative Tecnosegurança" className="h-14 w-auto" />
+            <img src={logo} alt="Interative Tecnosegurança" className="h-20 w-auto" />
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>

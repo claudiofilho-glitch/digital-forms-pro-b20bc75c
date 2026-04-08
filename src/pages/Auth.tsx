@@ -41,7 +41,7 @@ export default function Auth() {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <img src={logo} alt="Interative Tecnosegurança" className="h-16 w-auto mx-auto object-fill" />
+            <img src={logo} alt="Interative Tecnosegurança" className="h-24 w-auto mx-auto object-fill" />
           </div>
           <CardTitle className="text-2xl font-bold">OS Manager</CardTitle>
           <CardDescription>
