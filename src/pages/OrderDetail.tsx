@@ -164,7 +164,7 @@ export default function OrderDetail() {
       {/* Main card */}
       <Card ref={cardRef} className="overflow-hidden border-0 shadow-lg">
         {/* Header band */}
-        <div className="bg-primary px-6 py-5 text-primary-foreground">
+        <div className="bg-white px-6 py-5 text-primary border-b">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <img src={logo} alt="Interative Tecnologia" className="h-14 w-auto rounded bg-white/10 p-1" />
