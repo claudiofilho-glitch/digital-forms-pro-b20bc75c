@@ -21,7 +21,7 @@ type Status = Database["public"]["Enums"]["os_status"];
 export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { role, user } = useAuth();
+  const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [order, setOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(true);
