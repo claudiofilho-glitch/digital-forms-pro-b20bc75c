@@ -103,12 +103,15 @@ export default function OrderDetail() {
         <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
+        <Button variant="outline" onClick={handleSavePDF} className="gap-2">
+          <FileDown className="h-4 w-4" /> Salvar PDF
+        </Button>
         <Button variant="outline" onClick={handlePrint} className="gap-2">
           <Printer className="h-4 w-4" /> Imprimir
         </Button>
       </div>
 
-      <Card>
+      <Card ref={cardRef}>
         <CardHeader>
           {/* Logo for print */}
           <div className="hidden print:flex justify-center mb-4">
