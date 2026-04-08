@@ -167,15 +167,15 @@ export default function OrderDetail() {
         <div className="bg-white px-6 py-5 text-primary border-b">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <img src={logo} alt="Interative Tecnologia" className="h-14 w-auto rounded bg-white/10 p-1" />
+              <img src={logo} alt="Interative Tecnologia" className="h-14 w-auto rounded p-1" />
               <div>
-                <p className="text-sm font-medium opacity-80">Interative Tecnologia</p>
-                <p className="text-xs opacity-60">Ordem de Serviço</p>
+                <p className="text-sm font-medium text-primary">Interative Tecnologia</p>
+                <p className="text-xs text-primary/60">Ordem de Serviço</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold font-mono">#{order.order_number}</p>
-              <p className="text-xs opacity-70">
+              <p className="text-2xl font-bold font-mono text-primary">#{order.order_number}</p>
+              <p className="text-xs text-primary/70">
                 {new Date(order.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
               </p>
             </div>
