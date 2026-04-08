@@ -104,7 +104,9 @@ export default function ClientManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este cliente?")) return;
+    if (!confirm("Tem certeza que deseja excluir este cliente? As ordens de serviço vinculadas serão desassociadas.")) return;
+    // Desvincular ordens de serviço antes de excluir
+    await supabase.from("service_orders").update({ client_id: null, client_name: "" }).eq("client_id", id);
     const { error } = await supabase.from("clients").delete().eq("id", id);
     if (error) {
       toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
