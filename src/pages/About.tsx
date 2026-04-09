@@ -34,7 +34,11 @@ export default function About() {
                 certificados, atuamos no mercado há mais de 20 anos, atendendo empresas e residências
                 com excelência.
               </p>
-...
+              <p className="text-muted-foreground">
+                Nossa missão é proporcionar tranquilidade aos nossos clientes através de soluções
+                tecnológicas inteligentes, personalizadas e acessíveis.
+              </p>
+            </div>
             <div className="rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 p-8 flex items-center justify-center min-h-[250px]">
               <div className="text-center space-y-3">
                 <Shield className="h-16 w-16 text-primary mx-auto" />
