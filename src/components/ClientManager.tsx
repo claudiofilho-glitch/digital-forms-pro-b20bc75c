@@ -280,7 +280,7 @@ export default function ClientManager() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive"
-                            onClick={() => handleDelete(c.id)}
+                            onClick={() => confirmDelete(c)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
