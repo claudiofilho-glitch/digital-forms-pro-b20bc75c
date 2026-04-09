@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, PlusCircle, Pencil, Trash2, Building2 } from "lucide-react";
+import { Search, PlusCircle, Pencil, Trash2, Building2, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Client {
@@ -32,6 +33,7 @@ export default function ClientManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; client: Client | null; osCount: number }>({ open: false, client: null, osCount: 0 });
 
   useEffect(() => {
     fetchClients();
@@ -103,9 +105,15 @@ export default function ClientManager() {
     fetchClients();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este cliente? As ordens de serviço vinculadas serão desassociadas.")) return;
-    // Desvincular ordens de serviço antes de excluir
+  const confirmDelete = async (client: Client) => {
+    const { count } = await supabase.from("service_orders").select("*", { count: "exact", head: true }).eq("client_id", client.id);
+    setDeleteDialog({ open: true, client, osCount: count || 0 });
+  };
+
+  const handleDelete = async () => {
+    const id = deleteDialog.client?.id;
+    if (!id) return;
+    setDeleteDialog((d) => ({ ...d, open: false }));
     await supabase.from("service_orders").update({ client_id: null, client_name: "" }).eq("client_id", id);
     const { error } = await supabase.from("clients").delete().eq("id", id);
     if (error) {
@@ -272,7 +280,7 @@ export default function ClientManager() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive"
-                            onClick={() => handleDelete(c.id)}
+                            onClick={() => confirmDelete(c)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -286,6 +294,33 @@ export default function ClientManager() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => !open && setDeleteDialog((d) => ({ ...d, open: false }))}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Excluir cliente
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <span>Tem certeza que deseja excluir <strong>{deleteDialog.client?.name}</strong>?</span>
+              {deleteDialog.osCount > 0 ? (
+                <span className="block text-destructive font-medium">
+                  ⚠ Este cliente possui {deleteDialog.osCount} ordem(ns) de serviço vinculada(s). Elas serão desassociadas.
+                </span>
+              ) : (
+                <span className="block text-muted-foreground">Nenhuma ordem de serviço vinculada.</span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
