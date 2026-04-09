@@ -92,7 +92,7 @@ export type Database = {
           id: string
           location: string | null
           notes: string | null
-          order_number: number
+          order_number: string
           photos: string[] | null
           priority: Database["public"]["Enums"]["os_priority"]
           requester_id: string
@@ -114,7 +114,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
-          order_number?: number
+          order_number: string
           photos?: string[] | null
           priority?: Database["public"]["Enums"]["os_priority"]
           requester_id: string
@@ -136,7 +136,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
-          order_number?: number
+          order_number?: string
           photos?: string[] | null
           priority?: Database["public"]["Enums"]["os_priority"]
           requester_id?: string
