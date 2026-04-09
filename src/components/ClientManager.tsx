@@ -105,9 +105,15 @@ export default function ClientManager() {
     fetchClients();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este cliente? As ordens de serviço vinculadas serão desassociadas.")) return;
-    // Desvincular ordens de serviço antes de excluir
+  const confirmDelete = async (client: Client) => {
+    const { count } = await supabase.from("service_orders").select("*", { count: "exact", head: true }).eq("client_id", client.id);
+    setDeleteDialog({ open: true, client, osCount: count || 0 });
+  };
+
+  const handleDelete = async () => {
+    const id = deleteDialog.client?.id;
+    if (!id) return;
+    setDeleteDialog((d) => ({ ...d, open: false }));
     await supabase.from("service_orders").update({ client_id: null, client_name: "" }).eq("client_id", id);
     const { error } = await supabase.from("clients").delete().eq("id", id);
     if (error) {
