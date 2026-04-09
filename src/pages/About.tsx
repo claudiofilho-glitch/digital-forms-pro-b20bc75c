@@ -31,18 +31,14 @@ export default function About() {
               <p className="text-muted-foreground">
                 A Interative Tecnologia nasceu da paixão por tecnologia e da vontade de oferecer soluções
                 de segurança eletrônica de alta qualidade. Com uma equipe de profissionais experientes e
-                certificados, atuamos no mercado há mais de 10 anos, atendendo empresas e residências
+                certificados, atuamos no mercado há mais de 20 anos, atendendo empresas e residências
                 com excelência.
               </p>
-              <p className="text-muted-foreground">
-                Nossa missão é proporcionar tranquilidade aos nossos clientes através de soluções
-                tecnológicas inteligentes, personalizadas e acessíveis.
-              </p>
-            </div>
+...
             <div className="rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 p-8 flex items-center justify-center min-h-[250px]">
               <div className="text-center space-y-3">
                 <Shield className="h-16 w-16 text-primary mx-auto" />
-                <p className="text-3xl font-bold text-primary">+10 anos</p>
+                <p className="text-3xl font-bold text-primary">+20 anos</p>
                 <p className="text-muted-foreground">de experiência</p>
               </div>
             </div>
@@ -73,7 +69,7 @@ export default function About() {
             {[
               { value: "+500", label: "Projetos realizados" },
               { value: "+300", label: "Clientes ativos" },
-              { value: "+10", label: "Anos de mercado" },
+              { value: "+20", label: "Anos de mercado" },
               { value: "24h", label: "Suporte disponível" },
             ].map(({ value, label }) => (
               <div key={label} className="space-y-2">
