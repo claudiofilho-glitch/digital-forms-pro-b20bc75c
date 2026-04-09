@@ -11,7 +11,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   const navItems = [
-    { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
+    { to: "/dashboard", label: "Ordens de Serviço", icon: ClipboardList },
     { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
     ...(role === "admin" ? [{ to: "/admin", label: "Usuários", icon: Shield }] : []),
   ];
@@ -22,7 +22,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
+          <Link to="/dashboard" className="flex items-center gap-2 font-bold text-lg">
             <img src={logo} alt="Interative Tecnosegurança" className="h-14 w-auto" />
           </Link>
 

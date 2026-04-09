@@ -5,6 +5,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
+import PublicLayout from "@/components/PublicLayout";
+import Landing from "@/pages/Landing";
+import About from "@/pages/About";
+import Services from "@/pages/Services";
+import Portfolio from "@/pages/Portfolio";
+import OurClients from "@/pages/OurClients";
+import Contact from "@/pages/Contact";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import NewOrder from "@/pages/NewOrder";
@@ -30,8 +37,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
+}
+
+function PublicPage({ children }: { children: React.ReactNode }) {
+  return <PublicLayout>{children}</PublicLayout>;
 }
 
 const App = () => (
@@ -42,11 +53,23 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public website pages */}
+            <Route path="/" element={<PublicPage><Landing /></PublicPage>} />
+            <Route path="/sobre" element={<PublicPage><About /></PublicPage>} />
+            <Route path="/servicos" element={<PublicPage><Services /></PublicPage>} />
+            <Route path="/portfolio" element={<PublicPage><Portfolio /></PublicPage>} />
+            <Route path="/nossos-clientes" element={<PublicPage><OurClients /></PublicPage>} />
+            <Route path="/contato" element={<PublicPage><Contact /></PublicPage>} />
+
+            {/* Auth */}
             <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
+            {/* Protected system pages */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/nova-os" element={<ProtectedRoute><NewOrder /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/os/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
