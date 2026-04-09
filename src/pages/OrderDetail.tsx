@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2 } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -97,6 +97,18 @@ export default function OrderDetail() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!order || order.status !== "cancelled") return;
+    if (!confirm(`Deseja excluir a OS ${order.order_number}? O número ficará disponível para reutilização.`)) return;
+    const { error } = await supabase.from("service_orders").delete().eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "OS excluída com sucesso! Número disponível para reutilização." });
+      navigate("/");
+    }
+  };
+
   const handlePrint = () => window.print();
 
   const handleSavePDF = async () => {
@@ -158,6 +170,11 @@ export default function OrderDetail() {
           <Button variant="outline" onClick={handlePrint} className="gap-2">
             <Printer className="h-4 w-4" /> Imprimir
           </Button>
+          {role === "admin" && order.status === "cancelled" && (
+            <Button variant="destructive" onClick={handleDelete} className="gap-2">
+              <Trash2 className="h-4 w-4" /> Excluir OS
+            </Button>
+          )}
         </div>
       </div>
 
