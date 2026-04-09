@@ -28,7 +28,7 @@ export default function Auth() {
         await signUp(email, password, fullName);
         toast({ title: "Conta criada!", description: "Verifique seu e-mail para confirmar." });
       }
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {

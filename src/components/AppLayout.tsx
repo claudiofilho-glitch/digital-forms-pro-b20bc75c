@@ -11,7 +11,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   const navItems = [
-    { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
+    { to: "/dashboard", label: "Ordens de Serviço", icon: ClipboardList },
     { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
     ...(role === "admin" ? [{ to: "/admin", label: "Usuários", icon: Shield }] : []),
   ];
