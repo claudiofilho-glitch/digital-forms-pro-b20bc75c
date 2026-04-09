@@ -9,7 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Users, Shield, Wrench, User as UserIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
@@ -36,6 +39,9 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newUser, setNewUser] = useState({ email: "", password: "", full_name: "", role: "user" as AppRole });
 
   useEffect(() => {
     if (role === "admin") fetchUsers();
@@ -105,6 +111,31 @@ export default function Admin() {
     toast({ title: "Perfil atualizado", description: `Perfil alterado para ${ROLE_CONFIG[newRole].label}.` });
   };
 
+  const handleCreateUser = async () => {
+    if (!newUser.email || !newUser.password || !newUser.full_name) {
+      toast({ title: "Erro", description: "Preencha todos os campos.", variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("create-user", {
+        body: newUser,
+      });
+      if (res.error || res.data?.error) {
+        throw new Error(res.data?.error || res.error?.message || "Erro ao criar usuário");
+      }
+      toast({ title: "Usuário criado", description: `${newUser.full_name} cadastrado com sucesso.` });
+      setCreateOpen(false);
+      setNewUser({ email: "", password: "", full_name: "", role: "user" });
+      fetchUsers();
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const filtered = users.filter((u) => {
     const matchSearch = u.full_name.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === "all" || u.role === roleFilter;
@@ -128,9 +159,58 @@ export default function Admin() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold">Gerenciar Usuários</h1>
-        <p className="text-muted-foreground text-sm">Administre perfis e permissões dos usuários</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Gerenciar Usuários</h1>
+          <p className="text-muted-foreground text-sm">Administre perfis e permissões dos usuários</p>
+        </div>
+        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Novo Usuário
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label>Nome completo</Label>
+                <Input value={newUser.full_name} onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })} placeholder="Nome do usuário" />
+              </div>
+              <div className="space-y-2">
+                <Label>E-mail</Label>
+                <Input type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="email@exemplo.com" />
+              </div>
+              <div className="space-y-2">
+                <Label>Senha</Label>
+                <Input type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="Mínimo 6 caracteres" />
+              </div>
+              <div className="space-y-2">
+                <Label>Tipo de usuário</Label>
+                <RadioGroup value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v as AppRole })}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="user" id="role-user" />
+                    <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Usuário</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="technician" id="role-tech" />
+                    <Label htmlFor="role-tech" className="flex items-center gap-1"><Wrench className="h-3 w-3" /> Técnico</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="admin" id="role-admin" />
+                    <Label htmlFor="role-admin" className="flex items-center gap-1"><Shield className="h-3 w-3" /> Administrador</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <Button onClick={handleCreateUser} disabled={creating} className="w-full">
+                {creating ? "Criando..." : "Criar Usuário"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats */}
