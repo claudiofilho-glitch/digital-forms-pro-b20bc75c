@@ -165,7 +165,7 @@ export default function Dashboard() {
                     filtered.map((order) => (
                       <TableRow key={order.id} className="group">
                         <TableCell className="font-mono text-sm font-medium">
-                          #{order.order_number}
+                          {order.order_number}
                         </TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">
                           {order.title}
