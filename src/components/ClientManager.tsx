@@ -33,6 +33,7 @@ export default function ClientManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; client: Client | null; osCount: number }>({ open: false, client: null, osCount: 0 });
 
   useEffect(() => {
     fetchClients();
