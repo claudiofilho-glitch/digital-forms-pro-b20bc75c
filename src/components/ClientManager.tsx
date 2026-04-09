@@ -294,6 +294,33 @@ export default function ClientManager() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => !open && setDeleteDialog((d) => ({ ...d, open: false }))}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Excluir cliente
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <span>Tem certeza que deseja excluir <strong>{deleteDialog.client?.name}</strong>?</span>
+              {deleteDialog.osCount > 0 ? (
+                <span className="block text-destructive font-medium">
+                  ⚠ Este cliente possui {deleteDialog.osCount} ordem(ns) de serviço vinculada(s). Elas serão desassociadas.
+                </span>
+              ) : (
+                <span className="block text-muted-foreground">Nenhuma ordem de serviço vinculada.</span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
