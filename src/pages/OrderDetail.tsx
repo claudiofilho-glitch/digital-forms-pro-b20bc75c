@@ -174,7 +174,7 @@ export default function OrderDetail() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold font-mono text-primary">#{order.order_number}</p>
+              <p className="text-2xl font-bold font-mono text-primary">{order.order_number}</p>
               <p className="text-xs text-primary/70">
                 {new Date(order.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
               </p>
@@ -275,7 +275,7 @@ export default function OrderDetail() {
         {/* Footer */}
         <div className="px-6 py-3 bg-muted/30 border-t text-center">
           <p className="text-[10px] text-muted-foreground tracking-wide">
-            Interative Tecnologia · Ordem de Serviço #{order.order_number} · Gerado em {new Date().toLocaleDateString("pt-BR")}
+            Interative Tecnologia · Ordem de Serviço {order.order_number} · Gerado em {new Date().toLocaleDateString("pt-BR")}
           </p>
         </div>
       </Card>
