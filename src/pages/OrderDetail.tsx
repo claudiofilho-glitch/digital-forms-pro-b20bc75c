@@ -292,6 +292,40 @@ export default function OrderDetail() {
             <InfoItem icon={Calendar} label="Data Prevista" value={order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString("pt-BR") : "—"} />
           </div>
 
+          {/* Quick assign buttons (visible for admins when not in edit mode too) */}
+          {role === "admin" && order.status !== "completed" && order.status !== "cancelled" && (
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <UserPlus className="h-4 w-4" /> Atribuir Técnico
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                <Select value={assignTo} onValueChange={(v) => setAssignTo(v)}>
+                  <SelectTrigger className="w-[250px]"><SelectValue placeholder="Selecione um técnico" /></SelectTrigger>
+                  <SelectContent>
+                    {technicians.map((t) => (
+                      <SelectItem key={t.user_id} value={t.user_id}>{t.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="default"
+                  onClick={() => { if (assignTo) handleAssign(assignTo); }}
+                  disabled={!assignTo}
+                  className="gap-2"
+                >
+                  <UserPlus className="h-4 w-4" /> Atribuir ao técnico
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => { if (user) handleAssign(user.id); }}
+                  className="gap-2"
+                >
+                  <User className="h-4 w-4" /> Atribuir a mim
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Notes display (read-only for non-editors) */}
           {order.notes && !canEdit && (
             <div className="rounded-lg bg-muted/50 p-4">
