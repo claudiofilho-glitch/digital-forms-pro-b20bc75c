@@ -39,33 +39,60 @@ export default function NewOrder() {
 
   const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
 
+  const getNextOrderNumber = async () => {
+    const currentYear = new Date().getFullYear().toString();
+    const { data, error } = await supabase
+      .from("service_orders")
+      .select("order_number")
+      .like("order_number", `${currentYear}-%`);
+
+    if (error) throw error;
+
+    const usedNumbers = new Set(
+      (data || [])
+        .map(({ order_number }) => Number(order_number.split("-")[1]))
+        .filter((value) => Number.isFinite(value) && value > 0)
+    );
+
+    let nextNumber = 1;
+    while (usedNumbers.has(nextNumber)) nextNumber += 1;
+
+    return `${currentYear}-${String(nextNumber).padStart(4, "0")}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setLoading(true);
 
-    const selectedClient = clients.find((c) => c.id === form.client_id);
+    try {
+      const selectedClient = clients.find((c) => c.id === form.client_id);
+      const orderNumber = await getNextOrderNumber();
 
-    const { error } = await supabase.from("service_orders").insert({
-      title: form.title,
-      description: form.description,
-      service_type: form.service_type,
-      priority: form.priority,
-      location: form.location,
-      scheduled_date: form.scheduled_date || null,
-      requester_id: user.id,
-      requester_name: profile?.full_name || user.email || "",
-      client_id: form.client_id || null,
-      client_name: selectedClient?.name || "",
-    } as any);
+      const { error } = await supabase.from("service_orders").insert({
+        order_number: orderNumber,
+        title: form.title,
+        description: form.description,
+        service_type: form.service_type,
+        priority: form.priority,
+        location: form.location,
+        scheduled_date: form.scheduled_date || null,
+        requester_id: user.id,
+        requester_name: profile?.full_name || user.email || "",
+        client_id: form.client_id || null,
+        client_name: selectedClient?.name || "",
+      });
 
-    if (error) {
-      toast({ title: "Erro ao criar OS", description: error.message, variant: "destructive" });
-    } else {
+      if (error) throw error;
+
       toast({ title: "OS criada com sucesso!" });
       navigate("/");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Tente novamente.";
+      toast({ title: "Erro ao criar OS", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
