@@ -3,16 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import ClientManager from "@/components/ClientManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle } from "lucide-react";
+import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
@@ -34,14 +35,25 @@ const ROLE_CONFIG: Record<AppRole, { label: string; icon: typeof Shield; class: 
 };
 
 export default function Admin() {
-  const { role, loading: authLoading } = useAuth();
+  const { role, loading: authLoading, user: currentUser } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+
+  // Create user dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newUser, setNewUser] = useState({ email: "", password: "", full_name: "", role: "user" as AppRole });
+
+  // Edit user dialog
+  const [editOpen, setEditOpen] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editUser, setEditUser] = useState<{ user_id: string; full_name: string; phone: string }>({ user_id: "", full_name: "", phone: "" });
+
+  // Delete user dialog
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; user: UserRow | null }>({ open: false, user: null });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (role === "admin") fetchUsers();
@@ -95,7 +107,6 @@ export default function Admin() {
   };
 
   const changeRole = async (userId: string, newRole: AppRole) => {
-    // Delete existing roles, then insert new one
     const { error: delError } = await supabase.from("user_roles").delete().eq("user_id", userId);
     if (delError) {
       toast({ title: "Erro", description: "Não foi possível alterar o perfil.", variant: "destructive" });
@@ -118,16 +129,9 @@ export default function Admin() {
     }
     setCreating(true);
     try {
-      const res = await supabase.functions.invoke("create-user", {
-        body: newUser,
-      });
-      console.log("create-user response:", JSON.stringify(res));
-      if (res.error) {
-        throw new Error(res.error?.message || "Erro na chamada da função");
-      }
-      if (res.data?.error) {
-        throw new Error(res.data.error);
-      }
+      const res = await supabase.functions.invoke("create-user", { body: newUser });
+      if (res.error) throw new Error(res.error?.message || "Erro na chamada da função");
+      if (res.data?.error) throw new Error(res.data.error);
       toast({ title: "Usuário criado", description: `${newUser.full_name} cadastrado com sucesso.` });
       setCreateOpen(false);
       setNewUser({ email: "", password: "", full_name: "", role: "user" });
@@ -137,6 +141,55 @@ export default function Admin() {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {
       setCreating(false);
+    }
+  };
+
+  const openEditDialog = (u: UserRow) => {
+    setEditUser({ user_id: u.user_id, full_name: u.full_name, phone: u.phone || "" });
+    setEditOpen(true);
+  };
+
+  const handleEditUser = async () => {
+    if (!editUser.full_name.trim()) {
+      toast({ title: "Erro", description: "Nome é obrigatório.", variant: "destructive" });
+      return;
+    }
+    setEditSaving(true);
+    try {
+      const res = await supabase.functions.invoke("manage-user", {
+        body: { action: "update", user_id: editUser.user_id, full_name: editUser.full_name.trim(), phone: editUser.phone.trim() || null },
+      });
+      if (res.error) throw new Error(res.error?.message || "Erro ao atualizar");
+      if (res.data?.error) throw new Error(res.data.error);
+      toast({ title: "Usuário atualizado!" });
+      setEditOpen(false);
+      fetchUsers();
+    } catch (err: any) {
+      console.error("edit-user error:", err);
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    const userId = deleteDialog.user?.user_id;
+    if (!userId) return;
+    setDeleting(true);
+    try {
+      const res = await supabase.functions.invoke("manage-user", {
+        body: { action: "delete", user_id: userId },
+      });
+      if (res.error) throw new Error(res.error?.message || "Erro ao excluir");
+      if (res.data?.error) throw new Error(res.data.error);
+      toast({ title: "Usuário excluído com sucesso!" });
+      setDeleteDialog({ open: false, user: null });
+      fetchUsers();
+    } catch (err: any) {
+      console.error("delete-user error:", err);
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -178,6 +231,7 @@ export default function Admin() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+              <DialogDescription>Preencha os dados para criar um novo acesso ao sistema.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
@@ -229,17 +283,10 @@ export default function Admin() {
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nome..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Buscar por nome..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Perfil" />
-          </SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Perfil" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
             <SelectItem value="admin">Administrador</SelectItem>
@@ -261,18 +308,20 @@ export default function Admin() {
                   <TableHead>Perfil Atual</TableHead>
                   <TableHead>Alterar Perfil</TableHead>
                   <TableHead className="hidden md:table-cell">Cadastro</TableHead>
+                  <TableHead className="w-[100px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
                       Nenhum usuário encontrado.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filtered.map((u) => {
                     const rc = ROLE_CONFIG[u.role];
+                    const isSelf = u.user_id === currentUser?.id;
                     return (
                       <TableRow key={u.user_id}>
                         <TableCell className="font-medium">{u.full_name || "Sem nome"}</TableCell>
@@ -287,9 +336,7 @@ export default function Admin() {
                         </TableCell>
                         <TableCell>
                           <Select value={u.role} onValueChange={(v) => changeRole(u.user_id, v as AppRole)}>
-                            <SelectTrigger className="w-[150px] h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
+                            <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="admin">Administrador</SelectItem>
                               <SelectItem value="technician">Técnico</SelectItem>
@@ -300,6 +347,23 @@ export default function Admin() {
                         <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                           {new Date(u.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(u)} title="Editar">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive"
+                              disabled={isSelf}
+                              onClick={() => setDeleteDialog({ open: true, user: u })}
+                              title={isSelf ? "Não é possível excluir a si mesmo" : "Excluir"}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     );
                   })
@@ -309,6 +373,57 @@ export default function Admin() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Usuário</DialogTitle>
+            <DialogDescription>Atualize os dados do usuário.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label>Nome completo</Label>
+              <Input value={editUser.full_name} onChange={(e) => setEditUser({ ...editUser, full_name: e.target.value })} placeholder="Nome do usuário" />
+            </div>
+            <div className="space-y-2">
+              <Label>Telefone</Label>
+              <Input value={editUser.phone} onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })} placeholder="(00) 00000-0000" />
+            </div>
+            <Button onClick={handleEditUser} disabled={editSaving} className="w-full">
+              {editSaving ? "Salvando..." : "Salvar Alterações"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete User Confirmation */}
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => !open && setDeleteDialog({ open: false, user: null })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Excluir Usuário
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <span>Tem certeza que deseja excluir <strong>{deleteDialog.user?.full_name}</strong>?</span>
+              <span className="block text-destructive font-medium">
+                ⚠ Esta ação é irreversível. O usuário perderá acesso ao sistema e será desvinculado de todas as ordens de serviço.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Client Management */}
       <ClientManager />
