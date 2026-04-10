@@ -60,6 +60,7 @@ export default function ClientManager() {
       email: client.email || "",
       phone: client.phone || "",
       address: client.address || "",
+      city: (client as any).city || "",
       contact: client.contact || "",
       document: client.document || "",
       notes: client.notes || "",
