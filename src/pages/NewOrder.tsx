@@ -21,6 +21,8 @@ export default function NewOrder() {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
+  const [technicians, setTechnicians] = useState<{ user_id: string; full_name: string }[]>([]);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -29,12 +31,27 @@ export default function NewOrder() {
     location: "",
     scheduled_date: "",
     client_id: "",
+    assigned_to: "",
   });
 
   useEffect(() => {
     supabase.from("clients").select("id, name").order("name").then(({ data }) => {
       setClients((data as any[]) || []);
     });
+    // Fetch technicians (users with technician or admin role)
+    supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("role", ["technician", "admin"])
+      .then(async ({ data: roles }) => {
+        if (!roles?.length) return;
+        const userIds = [...new Set(roles.map((r) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", userIds);
+        setTechnicians(profiles || []);
+      });
   }, []);
 
   const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
@@ -69,6 +86,8 @@ export default function NewOrder() {
       const selectedClient = clients.find((c) => c.id === form.client_id);
       const orderNumber = await getNextOrderNumber();
 
+      const selectedTech = technicians.find((t) => t.user_id === form.assigned_to);
+
       const { error } = await supabase.from("service_orders").insert({
         order_number: orderNumber,
         title: form.title,
@@ -81,6 +100,8 @@ export default function NewOrder() {
         requester_name: profile?.full_name || user.email || "",
         client_id: form.client_id || null,
         client_name: selectedClient?.name || "",
+        assigned_to: form.assigned_to || null,
+        assigned_name: selectedTech?.full_name || "",
       });
 
       if (error) throw error;
@@ -162,6 +183,35 @@ export default function NewOrder() {
                 <Label htmlFor="date">Data prevista</Label>
                 <Input id="date" type="date" value={form.scheduled_date} onChange={(e) => update("scheduled_date", e.target.value)} />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Técnico Responsável</Label>
+              <div className="flex gap-2">
+                <Select value={form.assigned_to} onValueChange={(v) => update("assigned_to", v)}>
+                  <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione um técnico" /></SelectTrigger>
+                  <SelectContent>
+                    {technicians.map((t) => (
+                      <SelectItem key={t.user_id} value={t.user_id}>{t.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (user) update("assigned_to", user.id);
+                  }}
+                  className="whitespace-nowrap"
+                >
+                  Atribuir a mim
+                </Button>
+              </div>
+              {form.assigned_to && (
+                <p className="text-xs text-muted-foreground">
+                  Atribuído a: {technicians.find((t) => t.user_id === form.assigned_to)?.full_name || profile?.full_name || "Você"}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-3 pt-2">
