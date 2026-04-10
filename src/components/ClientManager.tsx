@@ -23,7 +23,7 @@ interface Client {
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", contact: "", document: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", address: "", city: "", contact: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -60,6 +60,7 @@ export default function ClientManager() {
       email: client.email || "",
       phone: client.phone || "",
       address: client.address || "",
+      city: (client as any).city || "",
       contact: client.contact || "",
       document: client.document || "",
       notes: client.notes || "",
@@ -79,25 +80,28 @@ export default function ClientManager() {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       address: form.address.trim() || null,
+      city: form.city.trim() || null,
       contact: form.contact.trim() || null,
       document: form.document.trim() || null,
       notes: form.notes.trim() || null,
-    };
+    } as any;
 
     if (editingId) {
       const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Cliente atualizado!" });
+        setSaving(false);
+        return;
       }
+      toast({ title: "Cliente atualizado!" });
     } else {
       const { error } = await supabase.from("clients").insert(payload);
       if (error) {
         toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Cliente criado!" });
+        setSaving(false);
+        return;
       }
+      toast({ title: "Cliente criado!" });
     }
 
     setSaving(false);
@@ -204,6 +208,14 @@ export default function ClientManager() {
                     value={form.address}
                     onChange={(e) => update("address", e.target.value)}
                     placeholder="Endereço completo"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Cidade</Label>
+                  <Input
+                    value={form.city}
+                    onChange={(e) => update("city", e.target.value)}
+                    placeholder="Nome da cidade"
                   />
                 </div>
               </div>
