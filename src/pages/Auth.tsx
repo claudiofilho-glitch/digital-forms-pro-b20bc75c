@@ -43,7 +43,7 @@ export default function Auth() {
           <div className="mx-auto mb-4">
             <img src={logo} alt="Interative Tecnosegurança" className="h-24 w-auto mx-auto object-fill" />
           </div>
-          <CardTitle className="text-2xl font-bold">OS Manager</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">CHAMADOS INTERATIVE</CardTitle>
           <CardDescription>
             {isLogin ? "Entre na sua conta" : "Crie sua conta"}
           </CardDescription>
