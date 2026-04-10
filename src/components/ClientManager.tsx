@@ -208,6 +208,14 @@ export default function ClientManager() {
                     placeholder="Endereço completo"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Cidade</Label>
+                  <Input
+                    value={form.city}
+                    onChange={(e) => update("city", e.target.value)}
+                    placeholder="Nome da cidade"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Observações</Label>
