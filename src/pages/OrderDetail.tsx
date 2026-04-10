@@ -97,9 +97,29 @@ export default function OrderDetail() {
       });
   }, [id]);
 
+  const handleAssign = async (techUserId: string) => {
+    if (!order) return;
+    const tech = technicians.find((t) => t.user_id === techUserId);
+    const updates = { assigned_to: techUserId, assigned_name: tech?.full_name || "" };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao atribuir", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Técnico atribuído com sucesso!" });
+      setOrder({ ...order, ...updates });
+      setAssignTo(techUserId);
+    }
+  };
+
   const handleUpdate = async () => {
     if (!order) return;
-    const updates: any = { notes, status };
+    const selectedTech = technicians.find((t) => t.user_id === assignTo);
+    const updates: any = {
+      notes,
+      status,
+      assigned_to: assignTo || null,
+      assigned_name: selectedTech?.full_name || "",
+    };
     if (status === "completed") updates.completion_date = new Date().toISOString();
 
     const { error } = await supabase
