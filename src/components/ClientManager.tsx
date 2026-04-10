@@ -90,16 +90,18 @@ export default function ClientManager() {
       const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Cliente atualizado!" });
+        setSaving(false);
+        return;
       }
+      toast({ title: "Cliente atualizado!" });
     } else {
       const { error } = await supabase.from("clients").insert(payload);
       if (error) {
         toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Cliente criado!" });
+        setSaving(false);
+        return;
       }
+      toast({ title: "Cliente criado!" });
     }
 
     setSaving(false);
