@@ -80,10 +80,11 @@ export default function ClientManager() {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       address: form.address.trim() || null,
+      city: form.city.trim() || null,
       contact: form.contact.trim() || null,
       document: form.document.trim() || null,
       notes: form.notes.trim() || null,
-    };
+    } as any;
 
     if (editingId) {
       const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
