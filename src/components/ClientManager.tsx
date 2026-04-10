@@ -23,7 +23,7 @@ interface Client {
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", contact: "", document: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", address: "", city: "", contact: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
