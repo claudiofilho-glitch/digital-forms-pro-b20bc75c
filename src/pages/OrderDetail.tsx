@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2 } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2, UserPlus } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -57,6 +57,8 @@ export default function OrderDetail() {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Status>("pending");
+  const [technicians, setTechnicians] = useState<{ user_id: string; full_name: string }[]>([]);
+  const [assignTo, setAssignTo] = useState("");
 
   const canEdit = role === "admin" || (role === "technician" && order?.assigned_to === user?.id);
   const sla = useSlaCountdown(order?.created_at);
@@ -74,8 +76,24 @@ export default function OrderDetail() {
           setOrder(data);
           setNotes(data.notes || "");
           setStatus(data.status);
+          setAssignTo(data.assigned_to || "");
         }
         setLoading(false);
+      });
+
+    // Fetch technicians
+    supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("role", ["technician", "admin"])
+      .then(async ({ data: roles }) => {
+        if (!roles?.length) return;
+        const userIds = [...new Set(roles.map((r) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", userIds);
+        setTechnicians(profiles || []);
       });
   }, [id]);
 
