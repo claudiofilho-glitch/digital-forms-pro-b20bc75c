@@ -75,38 +75,42 @@ export default function ClientManager() {
     }
     setSaving(true);
 
-    const payload = {
-      name: form.name.trim(),
-      email: form.email.trim() || null,
-      phone: form.phone.trim() || null,
-      address: form.address.trim() || null,
-      city: form.city.trim() || null,
-      contact: form.contact.trim() || null,
-      document: form.document.trim() || null,
-      notes: form.notes.trim() || null,
-    } as any;
+    try {
+      const payload = {
+        name: form.name.trim(),
+        email: form.email.trim() || null,
+        phone: form.phone.trim() || null,
+        address: form.address.trim() || null,
+        city: form.city.trim() || null,
+        contact: form.contact.trim() || null,
+        document: form.document.trim() || null,
+        notes: form.notes.trim() || null,
+      } as any;
 
-    if (editingId) {
-      const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
-      if (error) {
-        toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
-        setSaving(false);
-        return;
+      if (editingId) {
+        const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
+        if (error) {
+          toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+          return;
+        }
+        toast({ title: "Cliente atualizado!" });
+      } else {
+        const { error } = await supabase.from("clients").insert(payload);
+        if (error) {
+          toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
+          return;
+        }
+        toast({ title: "Cliente criado!" });
       }
-      toast({ title: "Cliente atualizado!" });
-    } else {
-      const { error } = await supabase.from("clients").insert(payload);
-      if (error) {
-        toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
-        setSaving(false);
-        return;
-      }
-      toast({ title: "Cliente criado!" });
+
+      setDialogOpen(false);
+      fetchClients();
+    } catch (err: any) {
+      console.error("Erro ao salvar cliente:", err);
+      toast({ title: "Erro inesperado", description: err?.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    setDialogOpen(false);
-    fetchClients();
   };
 
   const confirmDelete = async (client: Client) => {
