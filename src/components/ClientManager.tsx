@@ -75,38 +75,37 @@ export default function ClientManager() {
     }
     setSaving(true);
 
-    try {
-      const payload = {
-        name: form.name.trim(),
-        email: form.email.trim() || null,
-        phone: form.phone.trim() || null,
-        address: form.address.trim() || null,
-        city: form.city.trim() || null,
-        contact: form.contact.trim() || null,
-        document: form.document.trim() || null,
-        notes: form.notes.trim() || null,
-      } as any;
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim() || null,
+      phone: form.phone.trim() || null,
+      address: form.address.trim() || null,
+      city: form.city.trim() || null,
+      contact: form.contact.trim() || null,
+      document: form.document.trim() || null,
+      notes: form.notes.trim() || null,
+    } as any;
 
+    try {
+      let error;
       if (editingId) {
-        const { error } = await supabase.from("clients").update(payload).eq("id", editingId);
-        if (error) {
-          toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
-          return;
-        }
-        toast({ title: "Cliente atualizado!" });
+        const res = await supabase.from("clients").update(payload).eq("id", editingId);
+        error = res.error;
       } else {
-        const { error } = await supabase.from("clients").insert(payload);
-        if (error) {
-          toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
-          return;
-        }
-        toast({ title: "Cliente criado!" });
+        const res = await supabase.from("clients").insert(payload);
+        error = res.error;
       }
 
-      setDialogOpen(false);
-      fetchClients();
+      if (error) {
+        console.error("Supabase client save error:", error);
+        toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: editingId ? "Cliente atualizado!" : "Cliente criado!" });
+        setDialogOpen(false);
+        fetchClients();
+      }
     } catch (err: any) {
-      console.error("Erro ao salvar cliente:", err);
+      console.error("Unexpected client save error:", err);
       toast({ title: "Erro inesperado", description: err?.message || "Tente novamente.", variant: "destructive" });
     } finally {
       setSaving(false);

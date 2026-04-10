@@ -118,18 +118,22 @@ export default function Admin() {
     }
     setCreating(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("create-user", {
         body: newUser,
       });
-      if (res.error || res.data?.error) {
-        throw new Error(res.data?.error || res.error?.message || "Erro ao criar usuário");
+      console.log("create-user response:", JSON.stringify(res));
+      if (res.error) {
+        throw new Error(res.error?.message || "Erro na chamada da função");
+      }
+      if (res.data?.error) {
+        throw new Error(res.data.error);
       }
       toast({ title: "Usuário criado", description: `${newUser.full_name} cadastrado com sucesso.` });
       setCreateOpen(false);
       setNewUser({ email: "", password: "", full_name: "", role: "user" });
       fetchUsers();
     } catch (err: any) {
+      console.error("create-user error:", err);
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {
       setCreating(false);
