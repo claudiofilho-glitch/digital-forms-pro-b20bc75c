@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2 } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2, UserPlus } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -57,6 +57,8 @@ export default function OrderDetail() {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Status>("pending");
+  const [technicians, setTechnicians] = useState<{ user_id: string; full_name: string }[]>([]);
+  const [assignTo, setAssignTo] = useState("");
 
   const canEdit = role === "admin" || (role === "technician" && order?.assigned_to === user?.id);
   const sla = useSlaCountdown(order?.created_at);
@@ -74,14 +76,50 @@ export default function OrderDetail() {
           setOrder(data);
           setNotes(data.notes || "");
           setStatus(data.status);
+          setAssignTo(data.assigned_to || "");
         }
         setLoading(false);
       });
+
+    // Fetch technicians
+    supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("role", ["technician", "admin"])
+      .then(async ({ data: roles }) => {
+        if (!roles?.length) return;
+        const userIds = [...new Set(roles.map((r) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", userIds);
+        setTechnicians(profiles || []);
+      });
   }, [id]);
+
+  const handleAssign = async (techUserId: string) => {
+    if (!order) return;
+    const tech = technicians.find((t) => t.user_id === techUserId);
+    const updates = { assigned_to: techUserId, assigned_name: tech?.full_name || "" };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao atribuir", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Técnico atribuído com sucesso!" });
+      setOrder({ ...order, ...updates });
+      setAssignTo(techUserId);
+    }
+  };
 
   const handleUpdate = async () => {
     if (!order) return;
-    const updates: any = { notes, status };
+    const selectedTech = technicians.find((t) => t.user_id === assignTo);
+    const updates: any = {
+      notes,
+      status,
+      assigned_to: assignTo || null,
+      assigned_name: selectedTech?.full_name || "",
+    };
     if (status === "completed") updates.completion_date = new Date().toISOString();
 
     const { error } = await supabase
@@ -253,6 +291,40 @@ export default function OrderDetail() {
             <InfoItem icon={User} label="Técnico Responsável" value={order.assigned_name || "Não atribuído"} />
             <InfoItem icon={Calendar} label="Data Prevista" value={order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString("pt-BR") : "—"} />
           </div>
+
+          {/* Quick assign buttons (visible for admins when not in edit mode too) */}
+          {role === "admin" && order.status !== "completed" && order.status !== "cancelled" && (
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <UserPlus className="h-4 w-4" /> Atribuir Técnico
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                <Select value={assignTo} onValueChange={(v) => setAssignTo(v)}>
+                  <SelectTrigger className="w-[250px]"><SelectValue placeholder="Selecione um técnico" /></SelectTrigger>
+                  <SelectContent>
+                    {technicians.map((t) => (
+                      <SelectItem key={t.user_id} value={t.user_id}>{t.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="default"
+                  onClick={() => { if (assignTo) handleAssign(assignTo); }}
+                  disabled={!assignTo}
+                  className="gap-2"
+                >
+                  <UserPlus className="h-4 w-4" /> Atribuir ao técnico
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => { if (user) handleAssign(user.id); }}
+                  className="gap-2"
+                >
+                  <User className="h-4 w-4" /> Atribuir a mim
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Notes display (read-only for non-editors) */}
           {order.notes && !canEdit && (
