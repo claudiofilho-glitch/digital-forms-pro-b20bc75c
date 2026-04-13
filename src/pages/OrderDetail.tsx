@@ -360,6 +360,31 @@ export default function OrderDetail() {
               <Button onClick={handleUpdate}>Salvar alterações</Button>
             </div>
           )}
+
+          {/* Signature block – only when completed */}
+          {order.status === "completed" && (
+            <div className="border-t pt-6 space-y-4">
+              <h3 className="font-semibold text-foreground">Assinaturas de conclusão</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SignaturePad
+                  label="Assinatura do técnico"
+                  existingSignature={order.technician_signature}
+                  existingDate={order.technician_signed_at}
+                  onSave={handleTechSignature}
+                  disabled={!canEdit}
+                />
+                <SignaturePad
+                  label="Assinatura do cliente"
+                  showNameField
+                  existingSignature={order.client_signature}
+                  existingName={order.client_signer_name}
+                  existingDate={order.client_signed_at}
+                  onSave={handleClientSignature}
+                  disabled={!canEdit}
+                />
+              </div>
+            </div>
+          )}
         </CardContent>
 
         {/* Footer */}
