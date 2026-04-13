@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from "react";
+import SignaturePad from "@/components/SignaturePad";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -148,6 +149,34 @@ export default function OrderDetail() {
   };
 
   const handlePrint = () => window.print();
+
+  const handleTechSignature = async ({ signature }: { signature: string; name?: string }) => {
+    if (!order) return;
+    const updates = { technician_signature: signature, technician_signed_at: new Date().toISOString() };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao salvar assinatura", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Assinatura do técnico salva!" });
+      setOrder({ ...order, ...updates });
+    }
+  };
+
+  const handleClientSignature = async ({ signature, name }: { signature: string; name?: string }) => {
+    if (!order) return;
+    const updates = {
+      client_signature: signature,
+      client_signer_name: name || null,
+      client_signed_at: new Date().toISOString(),
+    };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao salvar assinatura", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Assinatura do cliente salva!" });
+      setOrder({ ...order, ...updates });
+    }
+  };
 
   const handleSavePDF = async () => {
     if (!cardRef.current || !order) return;
@@ -357,6 +386,31 @@ export default function OrderDetail() {
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="Descreva o que foi feito..." />
               </div>
               <Button onClick={handleUpdate}>Salvar alterações</Button>
+            </div>
+          )}
+
+          {/* Signature block – only when completed */}
+          {order.status === "completed" && (
+            <div className="border-t pt-6 space-y-4">
+              <h3 className="font-semibold text-foreground">Assinaturas de conclusão</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SignaturePad
+                  label="Assinatura do técnico"
+                  existingSignature={order.technician_signature}
+                  existingDate={order.technician_signed_at}
+                  onSave={handleTechSignature}
+                  disabled={!canEdit}
+                />
+                <SignaturePad
+                  label="Assinatura do cliente"
+                  showNameField
+                  existingSignature={order.client_signature}
+                  existingName={order.client_signer_name}
+                  existingDate={order.client_signed_at}
+                  onSave={handleClientSignature}
+                  disabled={!canEdit}
+                />
+              </div>
             </div>
           )}
         </CardContent>
