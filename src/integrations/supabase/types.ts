@@ -89,6 +89,9 @@ export type Database = {
           assigned_to: string | null
           client_id: string | null
           client_name: string | null
+          client_signature: string | null
+          client_signed_at: string | null
+          client_signer_name: string | null
           completion_date: string | null
           created_at: string
           description: string
@@ -103,6 +106,8 @@ export type Database = {
           scheduled_date: string | null
           service_type: string
           status: Database["public"]["Enums"]["os_status"]
+          technician_signature: string | null
+          technician_signed_at: string | null
           title: string
           updated_at: string
         }
@@ -111,6 +116,9 @@ export type Database = {
           assigned_to?: string | null
           client_id?: string | null
           client_name?: string | null
+          client_signature?: string | null
+          client_signed_at?: string | null
+          client_signer_name?: string | null
           completion_date?: string | null
           created_at?: string
           description?: string
@@ -125,6 +133,8 @@ export type Database = {
           scheduled_date?: string | null
           service_type?: string
           status?: Database["public"]["Enums"]["os_status"]
+          technician_signature?: string | null
+          technician_signed_at?: string | null
           title: string
           updated_at?: string
         }
@@ -133,6 +143,9 @@ export type Database = {
           assigned_to?: string | null
           client_id?: string | null
           client_name?: string | null
+          client_signature?: string | null
+          client_signed_at?: string | null
+          client_signer_name?: string | null
           completion_date?: string | null
           created_at?: string
           description?: string
@@ -147,6 +160,8 @@ export type Database = {
           scheduled_date?: string | null
           service_type?: string
           status?: Database["public"]["Enums"]["os_status"]
+          technician_signature?: string | null
+          technician_signed_at?: string | null
           title?: string
           updated_at?: string
         }
