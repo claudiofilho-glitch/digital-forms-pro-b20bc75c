@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Search, Printer, Eye } from "lucide-react";
+import { PlusCircle, Search, Printer } from "lucide-react";
 import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -21,6 +21,7 @@ type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -151,19 +152,22 @@ export default function Dashboard() {
                     <TableHead className="hidden sm:table-cell">Prioridade</TableHead>
                     <TableHead className="hidden lg:table-cell">Técnico</TableHead>
                     <TableHead className="hidden lg:table-cell">Data</TableHead>
-                    <TableHead className="w-[60px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
                         Nenhuma ordem de serviço encontrada.
                       </TableCell>
                     </TableRow>
                   ) : (
                     filtered.map((order) => (
-                      <TableRow key={order.id} className="group">
+                      <TableRow
+                        key={order.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => navigate(`/os/${order.id}`)}
+                      >
                         <TableCell className="font-mono text-sm font-medium">
                           {order.order_number}
                         </TableCell>
@@ -191,13 +195,6 @@ export default function Dashboard() {
                         </TableCell>
                         <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
                           {new Date(order.created_at).toLocaleDateString("pt-BR")}
-                        </TableCell>
-                        <TableCell>
-                          <Link to={`/os/${order.id}`}>
-                            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
                         </TableCell>
                       </TableRow>
                     ))
