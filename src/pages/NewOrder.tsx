@@ -10,9 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SERVICE_TYPES } from "@/lib/constants";
-import type { Database } from "@/integrations/supabase/types";
-
-type Priority = Database["public"]["Enums"]["os_priority"];
 
 export default function NewOrder() {
   const { user, profile } = useAuth();
@@ -26,8 +23,7 @@ export default function NewOrder() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    service_type: "Geral",
-    priority: "medium" as Priority,
+    service_type: "Atendimento Geral",
     location: "",
     scheduled_date: "",
     client_id: "",
@@ -93,7 +89,6 @@ export default function NewOrder() {
         title: form.title,
         description: form.description,
         service_type: form.service_type,
-        priority: form.priority,
         location: form.location,
         scheduled_date: form.scheduled_date || null,
         requester_id: user.id,
@@ -147,31 +142,16 @@ export default function NewOrder() {
               <Textarea id="description" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Descreva brevemente o problema..." rows={4} />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Tipo de Serviço</Label>
-                <Select value={form.service_type} onValueChange={(v) => update("service_type", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {SERVICE_TYPES.map((t) => (
-                      <SelectItem key={t} value={t}>{t}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Prioridade</Label>
-                <Select value={form.priority} onValueChange={(v) => update("priority", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Baixa</SelectItem>
-                    <SelectItem value="medium">Média</SelectItem>
-                    <SelectItem value="high">Alta</SelectItem>
-                    <SelectItem value="urgent">Urgente</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>Tipo de Atendimento</Label>
+              <Select value={form.service_type} onValueChange={(v) => update("service_type", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SERVICE_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

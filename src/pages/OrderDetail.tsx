@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
+import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2, UserPlus } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
@@ -272,8 +272,8 @@ export default function OrderDetail() {
             <Badge variant="secondary" className={cn(STATUS_MAP[order.status].class, "text-xs px-3 py-1")}>
               {STATUS_MAP[order.status].label}
             </Badge>
-            <Badge variant="secondary" className={cn(PRIORITY_MAP[order.priority].class, "text-xs px-3 py-1")}>
-              {PRIORITY_MAP[order.priority].label}
+            <Badge variant="secondary" className={cn(SERVICE_TYPE_MAP[order.service_type]?.class || "bg-muted text-muted-foreground", "text-xs px-3 py-1")}>
+              {SERVICE_TYPE_MAP[order.service_type]?.label || order.service_type}
             </Badge>
           </div>
 
