@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, Search, Printer } from "lucide-react";
-import { STATUS_MAP, PRIORITY_MAP } from "@/lib/constants";
+import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
 import TechnicianStats from "@/components/dashboard/TechnicianStats";
@@ -49,7 +49,7 @@ export default function Dashboard() {
       o.requester_name.toLowerCase().includes(search.toLowerCase()) ||
       (o.client_name && o.client_name.toLowerCase().includes(search.toLowerCase()));
     const matchStatus = statusFilter === "all" || o.status === statusFilter;
-    const matchPriority = priorityFilter === "all" || o.priority === priorityFilter;
+    const matchPriority = priorityFilter === "all" || o.service_type === priorityFilter;
     const matchTab = tab === "all" || o.status === tab;
     return matchSearch && matchStatus && matchPriority && matchTab;
   });
@@ -124,15 +124,14 @@ export default function Dashboard() {
             />
           </div>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Prioridade" />
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Tipo de Atendimento" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas prioridades</SelectItem>
-              <SelectItem value="low">Baixa</SelectItem>
-              <SelectItem value="medium">Média</SelectItem>
-              <SelectItem value="high">Alta</SelectItem>
-              <SelectItem value="urgent">Urgente</SelectItem>
+              <SelectItem value="all">Todos os tipos</SelectItem>
+              {Object.keys(SERVICE_TYPE_MAP).map((type) => (
+                <SelectItem key={type} value={type}>{type}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -147,9 +146,8 @@ export default function Dashboard() {
                     <TableHead className="w-[80px]">Nº</TableHead>
                     <TableHead>Título</TableHead>
                     <TableHead className="hidden md:table-cell">Cliente</TableHead>
-                    <TableHead className="hidden md:table-cell">Tipo</TableHead>
+                    <TableHead className="hidden md:table-cell">Tipo de Atendimento</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="hidden sm:table-cell">Prioridade</TableHead>
                     <TableHead className="hidden lg:table-cell">Técnico</TableHead>
                     <TableHead className="hidden lg:table-cell">Data</TableHead>
                   </TableRow>
@@ -177,17 +175,14 @@ export default function Dashboard() {
                         <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                           {order.client_name || "—"}
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                          {order.service_type}
+                        <TableCell className="hidden md:table-cell">
+                          <Badge variant="secondary" className={cn("text-xs", SERVICE_TYPE_MAP[order.service_type]?.class || "bg-muted text-muted-foreground")}>
+                            {SERVICE_TYPE_MAP[order.service_type]?.label || order.service_type}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary" className={cn("text-xs", STATUS_MAP[order.status].class)}>
                             {STATUS_MAP[order.status].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <Badge variant="secondary" className={cn("text-xs", PRIORITY_MAP[order.priority].class)}>
-                            {PRIORITY_MAP[order.priority].label}
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
