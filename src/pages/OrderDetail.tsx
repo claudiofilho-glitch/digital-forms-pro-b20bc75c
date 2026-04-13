@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from "react";
+import SignaturePad from "@/components/SignaturePad";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
