@@ -150,6 +150,34 @@ export default function OrderDetail() {
 
   const handlePrint = () => window.print();
 
+  const handleTechSignature = async ({ signature }: { signature: string; name?: string }) => {
+    if (!order) return;
+    const updates = { technician_signature: signature, technician_signed_at: new Date().toISOString() };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao salvar assinatura", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Assinatura do técnico salva!" });
+      setOrder({ ...order, ...updates });
+    }
+  };
+
+  const handleClientSignature = async ({ signature, name }: { signature: string; name?: string }) => {
+    if (!order) return;
+    const updates = {
+      client_signature: signature,
+      client_signer_name: name || null,
+      client_signed_at: new Date().toISOString(),
+    };
+    const { error } = await supabase.from("service_orders").update(updates).eq("id", order.id);
+    if (error) {
+      toast({ title: "Erro ao salvar assinatura", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Assinatura do cliente salva!" });
+      setOrder({ ...order, ...updates });
+    }
+  };
+
   const handleSavePDF = async () => {
     if (!cardRef.current || !order) return;
     const html2canvas = (await import("html2canvas")).default;
