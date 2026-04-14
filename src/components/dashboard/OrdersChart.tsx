@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from "recharts";
-import { BarChart3 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
+import { BarChart3, Users } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
@@ -44,24 +44,31 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
     return { name: dayStr, total: count };
   });
 
-  // Status pie data
-  const statusData = Object.entries(
-    orders.reduce((acc, o) => {
-      acc[o.status] = (acc[o.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  ).map(([status, value]) => ({
-    name: STATUS_LABELS[status] || status,
-    value,
-    fill: STATUS_COLORS[status] || "hsl(var(--muted))",
-  }));
+  // Technician stacked bar data
+  const techMap = new Map<string, Record<string, number>>();
+  orders.forEach((o) => {
+    const name = o.assigned_name || "Não atribuído";
+    if (!techMap.has(name)) {
+      techMap.set(name, { pending: 0, in_progress: 0, completed: 0, cancelled: 0 });
+    }
+    const entry = techMap.get(name)!;
+    entry[o.status] = (entry[o.status] || 0) + 1;
+  });
+
+  const techData = Array.from(techMap.entries())
+    .map(([name, counts]) => ({ name, ...counts } as { name: string; pending: number; in_progress: number; completed: number; cancelled: number }))
+    .sort((a, b) => {
+      const totalA = a.pending + a.in_progress + a.completed + a.cancelled;
+      const totalB = b.pending + b.in_progress + b.completed + b.cancelled;
+      return totalB - totalA;
+    });
 
   const barChartConfig = {
     total: { label: "OS Criadas", color: "hsl(var(--primary))" },
   };
 
-  const pieChartConfig = statusData.reduce((acc, item) => {
-    acc[item.name] = { label: item.name, color: item.fill };
+  const techChartConfig = Object.entries(STATUS_LABELS).reduce((acc, [key, label]) => {
+    acc[key] = { label, color: STATUS_COLORS[key] };
     return acc;
   }, {} as Record<string, { label: string; color: string }>);
 
@@ -90,20 +97,22 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" />
-            Distribuição por Status
+            <Users className="h-4 w-4 text-primary" />
+            OS por Técnico
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={pieChartConfig} className="h-[220px] w-full">
-            <PieChart>
+          <ChartContainer config={techChartConfig} className="h-[220px] w-full">
+            <BarChart data={techData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+              <YAxis type="category" dataKey="name" fontSize={11} tickLine={false} axisLine={false} width={100} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name}: ${value}`}>
-                {statusData.map((entry, index) => (
-                  <Cell key={index} fill={entry.fill} />
-                ))}
-              </Pie>
-            </PieChart>
+              <Legend formatter={(value: string) => STATUS_LABELS[value] || value} />
+              {Object.keys(STATUS_COLORS).map((status) => (
+                <Bar key={status} dataKey={status} stackId="a" fill={STATUS_COLORS[status]} radius={0} />
+              ))}
+            </BarChart>
           </ChartContainer>
         </CardContent>
       </Card>
