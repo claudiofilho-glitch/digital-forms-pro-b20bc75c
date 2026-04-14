@@ -125,9 +125,13 @@ export default function NewOrder() {
               <Select value={form.client_id} onValueChange={(v) => update("client_id", v)}>
                 <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
                 <SelectContent>
-                  {clients.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
+                  {clients.length === 0 ? (
+                    <SelectItem value="__empty" disabled>Nenhum cliente cadastrado</SelectItem>
+                  ) : (
+                    clients.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
