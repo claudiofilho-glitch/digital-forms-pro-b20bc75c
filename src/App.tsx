@@ -11,6 +11,7 @@ import NewOrder from "@/pages/NewOrder";
 import OrderDetail from "@/pages/OrderDetail";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/nova-os" element={<ProtectedRoute><NewOrder /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/os/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

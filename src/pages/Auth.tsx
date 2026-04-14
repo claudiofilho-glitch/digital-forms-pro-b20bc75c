@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,26 +10,37 @@ import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<"login" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isLogin) {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password, fullName);
-        toast({ title: "Conta criada!", description: "Verifique seu e-mail para confirmar." });
-      }
+      await signIn(email, password);
       navigate("/");
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: "E-mail enviado", description: "Verifique sua caixa de entrada para redefinir a senha." });
+      setMode("login");
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {
@@ -45,34 +57,40 @@ export default function Auth() {
           </div>
           <CardTitle className="text-2xl font-bold text-primary">CHAMADOS INTERATIVE</CardTitle>
           <CardDescription>
-            {isLogin ? "Entre na sua conta" : "Crie sua conta"}
+            {mode === "login" ? "Entre na sua conta" : "Recuperar senha"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+          {mode === "login" ? (
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
-                <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                <Label htmlFor="email">E-mail</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Aguarde..." : isLogin ? "Entrar" : "Criar conta"}
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Aguarde..." : "Entrar"}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Aguarde..." : "Enviar link de recuperação"}
+              </Button>
+            </form>
+          )}
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => setMode(mode === "login" ? "forgot" : "login")}
             className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            {isLogin ? "Não tem conta? Cadastre-se" : "Já tem conta? Entre"}
+            {mode === "login" ? "Esqueci minha senha" : "Voltar ao login"}
           </button>
         </CardContent>
       </Card>
