@@ -56,7 +56,7 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
   });
 
   const techData = Array.from(techMap.entries())
-    .map(([name, counts]) => ({ name, ...counts }))
+    .map(([name, counts]) => ({ name, ...counts } as { name: string; pending: number; in_progress: number; completed: number; cancelled: number }))
     .sort((a, b) => {
       const totalA = a.pending + a.in_progress + a.completed + a.cancelled;
       const totalB = b.pending + b.in_progress + b.completed + b.cancelled;
