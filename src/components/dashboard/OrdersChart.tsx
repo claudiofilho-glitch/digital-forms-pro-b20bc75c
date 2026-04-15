@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import { BarChart3, Users, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
