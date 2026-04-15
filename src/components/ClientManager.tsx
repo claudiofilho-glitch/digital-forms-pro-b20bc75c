@@ -58,6 +58,7 @@ export default function ClientManager() {
     setForm({
       name: client.name,
       email: client.email || "",
+      email2: (client as any).email2 || "",
       phone: client.phone || "",
       address: client.address || "",
       city: (client as any).city || "",
@@ -79,6 +80,7 @@ export default function ClientManager() {
     const payload = {
       name: form.name.trim(),
       email: form.email.trim() || null,
+      email2: form.email2.trim() || null,
       phone: form.phone.trim() || null,
       address: form.address.trim() || null,
       city: form.city.trim() || null,
