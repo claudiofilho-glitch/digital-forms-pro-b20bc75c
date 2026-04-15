@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import { BarChart3, Users, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
@@ -25,24 +27,54 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default function OrdersChart({ orders }: OrdersChartProps) {
-  // Last 7 days chart data
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
+  const [range, setRange] = useState<"7d" | "30d" | "year">("7d");
 
-  const dailyData = last7Days.map((day) => {
-    const dayStr = day.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" });
-    const nextDay = new Date(day);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const count = orders.filter((o) => {
-      const created = new Date(o.created_at);
-      return created >= day && created < nextDay;
-    }).length;
-    return { name: dayStr, total: count };
-  });
+  const buildChartData = () => {
+    if (range === "7d") {
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        d.setHours(0, 0, 0, 0);
+        const nextDay = new Date(d);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const count = orders.filter((o) => {
+          const created = new Date(o.created_at);
+          return created >= d && created < nextDay;
+        }).length;
+        return { name: d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" }), total: count };
+      });
+    }
+    if (range === "30d") {
+      return Array.from({ length: 30 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (29 - i));
+        d.setHours(0, 0, 0, 0);
+        const nextDay = new Date(d);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const count = orders.filter((o) => {
+          const created = new Date(o.created_at);
+          return created >= d && created < nextDay;
+        }).length;
+        return { name: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }), total: count };
+      });
+    }
+    // year — group by month
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date();
+      d.setMonth(d.getMonth() - (11 - i));
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      const nextMonth = new Date(d);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      const count = orders.filter((o) => {
+        const created = new Date(o.created_at);
+        return created >= d && created < nextMonth;
+      }).length;
+      return { name: d.toLocaleDateString("pt-BR", { month: "short" }), total: count };
+    });
+  };
+
+  const dailyData = buildChartData();
 
   // Technician stacked bar data
   const techMap = new Map<string, Record<string, number>>();
@@ -98,10 +130,25 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-primary" />
-              OS Criadas — Últimos 7 dias
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                OS Criadas
+              </CardTitle>
+              <div className="flex gap-1">
+                {([["7d", "7 dias"], ["30d", "30 dias"], ["year", "Anual"]] as const).map(([val, label]) => (
+                  <Button
+                    key={val}
+                    size="sm"
+                    variant={range === val ? "default" : "outline"}
+                    className="h-7 text-xs px-2"
+                    onClick={() => setRange(val)}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={barChartConfig} className="h-[220px] w-full">
