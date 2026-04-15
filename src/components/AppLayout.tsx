@@ -13,10 +13,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { to: "/", label: "Ordens de Serviço", icon: ClipboardList },
     { to: "/nova-os", label: "Nova OS", icon: PlusCircle },
-    ...(role === "admin" ? [{ to: "/admin", label: "Usuários", icon: Shield }] : []),
+    ...(role === "admin" ? [{ to: "/admin", label: "Operadores", icon: Shield }] : []),
   ];
 
-  const roleLabel = role === "admin" ? "Administrador" : role === "technician" ? "Técnico" : "Usuário";
+  const roleLabel = role === "admin" ? "Administrador" : role === "technician" ? "Técnico" : "Operador";
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex flex-col items-end text-xs">
-              <span className="font-medium">{profile?.full_name || "Usuário"}</span>
+              <span className="font-medium">{profile?.full_name || "Operador"}</span>
               <span className="text-muted-foreground">{roleLabel}</span>
             </div>
             <Button variant="ghost" size="icon" onClick={signOut} title="Sair">
