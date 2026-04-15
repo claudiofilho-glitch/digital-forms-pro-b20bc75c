@@ -31,7 +31,7 @@ interface UserRow {
 const ROLE_CONFIG: Record<AppRole, { label: string; icon: typeof Shield; class: string }> = {
   admin: { label: "Administrador", icon: Shield, class: "bg-destructive/15 text-destructive" },
   technician: { label: "Técnico", icon: Wrench, class: "bg-primary/15 text-primary" },
-  user: { label: "Usuário", icon: UserIcon, class: "bg-muted text-muted-foreground" },
+  user: { label: "Operador", icon: UserIcon, class: "bg-muted text-muted-foreground" },
 };
 
 export default function Admin() {
@@ -100,7 +100,7 @@ export default function Admin() {
       setUsers(merged);
     } catch (err) {
       console.error("Error fetching users:", err);
-      toast({ title: "Erro", description: "Não foi possível carregar usuários.", variant: "destructive" });
+      toast({ title: "Erro", description: "Não foi possível carregar operadores.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,7 @@ export default function Admin() {
       const res = await supabase.functions.invoke("create-user", { body: newUser });
       if (res.error) throw new Error(res.error?.message || "Erro na chamada da função");
       if (res.data?.error) throw new Error(res.data.error);
-      toast({ title: "Usuário criado", description: `${newUser.full_name} cadastrado com sucesso.` });
+      toast({ title: "Operador criado", description: `${newUser.full_name} cadastrado com sucesso.` });
       setCreateOpen(false);
       setNewUser({ email: "", password: "", full_name: "", role: "user" });
       fetchUsers();
@@ -161,7 +161,7 @@ export default function Admin() {
       });
       if (res.error) throw new Error(res.error?.message || "Erro ao atualizar");
       if (res.data?.error) throw new Error(res.data.error);
-      toast({ title: "Usuário atualizado!" });
+      toast({ title: "Operador atualizado!" });
       setEditOpen(false);
       fetchUsers();
     } catch (err: any) {
@@ -182,7 +182,7 @@ export default function Admin() {
       });
       if (res.error) throw new Error(res.error?.message || "Erro ao excluir");
       if (res.data?.error) throw new Error(res.data.error);
-      toast({ title: "Usuário excluído com sucesso!" });
+      toast({ title: "Operador excluído com sucesso!" });
       setDeleteDialog({ open: false, user: null });
       fetchUsers();
     } catch (err: any) {
@@ -218,25 +218,25 @@ export default function Admin() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Gerenciar Usuários</h1>
-          <p className="text-muted-foreground text-sm">Administre perfis e permissões dos usuários</p>
+          <h1 className="text-2xl font-bold">Gerenciar Operadores</h1>
+          <p className="text-muted-foreground text-sm">Administre perfis e permissões dos operadores</p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <PlusCircle className="h-4 w-4" />
-              Novo Usuário
+              Novo Operador
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+              <DialogTitle>Cadastrar Novo Operador</DialogTitle>
               <DialogDescription>Preencha os dados para criar um novo acesso ao sistema.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
                 <Label>Nome completo</Label>
-                <Input value={newUser.full_name} onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })} placeholder="Nome do usuário" />
+                <Input value={newUser.full_name} onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })} placeholder="Nome do operador" />
               </div>
               <div className="space-y-2">
                 <Label>E-mail</Label>
@@ -247,11 +247,11 @@ export default function Admin() {
                 <Input type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="Mínimo 6 caracteres" />
               </div>
               <div className="space-y-2">
-                <Label>Tipo de usuário</Label>
+                <Label>Tipo de operador</Label>
                 <RadioGroup value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v as AppRole })}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="user" id="role-user" />
-                    <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Usuário</Label>
+                    <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Operador</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="technician" id="role-tech" />
@@ -264,7 +264,7 @@ export default function Admin() {
                 </RadioGroup>
               </div>
               <Button onClick={handleCreateUser} disabled={creating} className="w-full">
-                {creating ? "Criando..." : "Criar Usuário"}
+                {creating ? "Criando..." : "Criar Operador"}
               </Button>
             </div>
           </DialogContent>
@@ -276,7 +276,7 @@ export default function Admin() {
         <StatCard icon={Users} label="Total" value={stats.total} />
         <StatCard icon={Shield} label="Admins" value={stats.admins} className="bg-destructive/15 text-destructive" />
         <StatCard icon={Wrench} label="Técnicos" value={stats.technicians} className="bg-primary/15 text-primary" />
-        <StatCard icon={UserIcon} label="Usuários" value={stats.regularUsers} className="bg-muted text-muted-foreground" />
+        <StatCard icon={UserIcon} label="Operadores" value={stats.regularUsers} className="bg-muted text-muted-foreground" />
       </div>
 
       {/* Filters */}
@@ -291,7 +291,7 @@ export default function Admin() {
             <SelectItem value="all">Todos</SelectItem>
             <SelectItem value="admin">Administrador</SelectItem>
             <SelectItem value="technician">Técnico</SelectItem>
-            <SelectItem value="user">Usuário</SelectItem>
+            <SelectItem value="user">Operador</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -315,7 +315,7 @@ export default function Admin() {
                 {filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
-                      Nenhum usuário encontrado.
+                      Nenhum operador encontrado.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -340,7 +340,7 @@ export default function Admin() {
                             <SelectContent>
                               <SelectItem value="admin">Administrador</SelectItem>
                               <SelectItem value="technician">Técnico</SelectItem>
-                              <SelectItem value="user">Usuário</SelectItem>
+                              <SelectItem value="user">Operador</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -378,13 +378,13 @@ export default function Admin() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editar Usuário</DialogTitle>
-            <DialogDescription>Atualize os dados do usuário.</DialogDescription>
+            <DialogTitle>Editar Operador</DialogTitle>
+            <DialogDescription>Atualize os dados do operador.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label>Nome completo</Label>
-              <Input value={editUser.full_name} onChange={(e) => setEditUser({ ...editUser, full_name: e.target.value })} placeholder="Nome do usuário" />
+              <Input value={editUser.full_name} onChange={(e) => setEditUser({ ...editUser, full_name: e.target.value })} placeholder="Nome do operador" />
             </div>
             <div className="space-y-2">
               <Label>Telefone</Label>
@@ -403,12 +403,12 @@ export default function Admin() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Excluir Usuário
+              Excluir Operador
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <span>Tem certeza que deseja excluir <strong>{deleteDialog.user?.full_name}</strong>?</span>
               <span className="block text-destructive font-medium">
-                ⚠ Esta ação é irreversível. O usuário perderá acesso ao sistema e será desvinculado de todas as ordens de serviço.
+                ⚠ Esta ação é irreversível. O operador perderá acesso ao sistema e será desvinculado de todas as ordens de serviço.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
