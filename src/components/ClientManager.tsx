@@ -23,7 +23,7 @@ interface Client {
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", phone: "", address: "", city: "", contact: "", document: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", address: "", city: "", contact: "", contact2: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -62,6 +62,7 @@ export default function ClientManager() {
       address: client.address || "",
       city: (client as any).city || "",
       contact: client.contact || "",
+      contact2: (client as any).contact2 || "",
       document: client.document || "",
       notes: client.notes || "",
     });
@@ -82,6 +83,7 @@ export default function ClientManager() {
       address: form.address.trim() || null,
       city: form.city.trim() || null,
       contact: form.contact.trim() || null,
+      contact2: form.contact2.trim() || null,
       document: form.document.trim() || null,
       notes: form.notes.trim() || null,
     } as any;
@@ -174,27 +176,11 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Contato</Label>
-                  <Input
-                    value={form.contact}
-                    onChange={(e) => update("contact", e.target.value)}
-                    placeholder="Nome do contato"
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label>CPF/CNPJ</Label>
                   <Input
                     value={form.document}
                     onChange={(e) => update("document", e.target.value)}
                     placeholder="000.000.000-00 ou 00.000.000/0000-00"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>E-mail</Label>
-                  <Input
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
-                    placeholder="email@exemplo.com"
                   />
                 </div>
                 <div className="space-y-2">
@@ -219,6 +205,30 @@ export default function ClientManager() {
                     value={form.city}
                     onChange={(e) => update("city", e.target.value)}
                     placeholder="Nome da cidade"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contato 1</Label>
+                  <Input
+                    value={form.contact}
+                    onChange={(e) => update("contact", e.target.value)}
+                    placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contato 2</Label>
+                  <Input
+                    value={form.contact2}
+                    onChange={(e) => update("contact2", e.target.value)}
+                    placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>E-mail</Label>
+                  <Input
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
+                    placeholder="email@exemplo.com"
                   />
                 </div>
               </div>
