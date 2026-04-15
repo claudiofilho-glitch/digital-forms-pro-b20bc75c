@@ -130,10 +130,25 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-primary" />
-              OS Criadas — Últimos 7 dias
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                OS Criadas
+              </CardTitle>
+              <div className="flex gap-1">
+                {([["7d", "7 dias"], ["30d", "30 dias"], ["year", "Anual"]] as const).map(([val, label]) => (
+                  <Button
+                    key={val}
+                    size="sm"
+                    variant={range === val ? "default" : "outline"}
+                    className="h-7 text-xs px-2"
+                    onClick={() => setRange(val)}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={barChartConfig} className="h-[220px] w-full">
