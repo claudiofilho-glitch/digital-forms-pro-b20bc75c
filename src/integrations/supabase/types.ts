@@ -19,6 +19,7 @@ export type Database = {
           address: string | null
           city: string | null
           contact: string | null
+          contact2: string | null
           created_at: string
           document: string | null
           email: string | null
@@ -32,6 +33,7 @@ export type Database = {
           address?: string | null
           city?: string | null
           contact?: string | null
+          contact2?: string | null
           created_at?: string
           document?: string | null
           email?: string | null
@@ -45,6 +47,7 @@ export type Database = {
           address?: string | null
           city?: string | null
           contact?: string | null
+          contact2?: string | null
           created_at?: string
           document?: string | null
           email?: string | null
