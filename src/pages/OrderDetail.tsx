@@ -385,7 +385,17 @@ export default function OrderDetail() {
                 <Label>Observações do técnico</Label>
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="Descreva o que foi feito..." />
               </div>
-              <Button onClick={handleUpdate}>Salvar alterações</Button>
+              {status === "completed" && (!order.technician_signature || !order.client_signature) && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertTriangle className="h-4 w-4" /> Ambas as assinaturas são obrigatórias para concluir a OS.
+                </p>
+              )}
+              <Button
+                onClick={handleUpdate}
+                disabled={status === "completed" && (!order.technician_signature || !order.client_signature)}
+              >
+                Salvar alterações
+              </Button>
             </div>
           )}
 
