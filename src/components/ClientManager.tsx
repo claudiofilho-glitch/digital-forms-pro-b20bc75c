@@ -218,6 +218,14 @@ export default function ClientManager() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label>E-mail 1</Label>
+                  <Input
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
+                    placeholder="email@exemplo.com"
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>Contato 2</Label>
                   <Input
                     value={form.contact2}
@@ -226,10 +234,10 @@ export default function ClientManager() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>E-mail</Label>
+                  <Label>E-mail 2</Label>
                   <Input
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
+                    value={form.email2}
+                    onChange={(e) => update("email2", e.target.value)}
                     placeholder="email@exemplo.com"
                   />
                 </div>
