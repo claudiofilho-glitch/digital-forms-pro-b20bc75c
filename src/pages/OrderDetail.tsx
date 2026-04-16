@@ -389,8 +389,8 @@ export default function OrderDetail() {
             </div>
           )}
 
-          {/* Signature block – only when completed */}
-          {order.status === "completed" && (
+          {/* Signature block – only when completed or being marked as completed */}
+          {(order.status === "completed" || status === "completed") && (
             <div className="border-t pt-6 space-y-4">
               <h3 className="font-semibold text-foreground">Assinaturas de conclusão</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
