@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Search, Printer, ChevronLeft, ChevronRight } from "lucide-react";
+import { PlusCircle, Search, Printer, ChevronLeft, ChevronRight, ClipboardList } from "lucide-react";
 import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -161,31 +161,41 @@ export default function Dashboard() {
           </Select>
         </div>
 
-        {/* Table */}
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">Nº</TableHead>
-                    <TableHead>Título</TableHead>
-                    <TableHead className="hidden md:table-cell">Cliente</TableHead>
-                    <TableHead className="hidden md:table-cell">Tipo de Atendimento</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="hidden lg:table-cell">Técnico</TableHead>
-                    <TableHead className="hidden lg:table-cell">Data</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.length === 0 ? (
+        {/* Table or Empty State */}
+        {filtered.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <ClipboardList size={48} className="text-muted-foreground" />
+              <h3 className="text-base font-semibold">Nenhuma OS encontrada</h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                Tente ajustar os filtros ou crie uma nova ordem de serviço
+              </p>
+              <Link to="/nova-os">
+                <Button size="sm" className="mt-2">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Nova OS
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
-                        Nenhuma ordem de serviço encontrada.
-                      </TableCell>
+                      <TableHead className="w-[80px]">Nº</TableHead>
+                      <TableHead>Título</TableHead>
+                      <TableHead className="hidden md:table-cell">Cliente</TableHead>
+                      <TableHead className="hidden md:table-cell">Tipo de Atendimento</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="hidden lg:table-cell">Técnico</TableHead>
+                      <TableHead className="hidden lg:table-cell">Data</TableHead>
                     </TableRow>
-                  ) : (
-                    filtered.map((order) => (
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((order) => (
                       <TableRow
                         key={order.id}
                         className="cursor-pointer hover:bg-muted/50"
@@ -217,36 +227,36 @@ export default function Dashboard() {
                           {new Date(order.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-            <div className="flex items-center justify-between gap-4 border-t p-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-              >
-                <ChevronLeft className="mr-1 h-4 w-4" />
-                Anterior
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Página {page} de {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-              >
-                Próxima
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-t p-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                >
+                  <ChevronLeft className="mr-1 h-4 w-4" />
+                  Anterior
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Página {page} de {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                >
+                  Próxima
+                  <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
