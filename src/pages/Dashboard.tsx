@@ -35,6 +35,21 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchOrders();
+
+    const channel = supabase
+      .channel("service_orders_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "service_orders" },
+        () => {
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
