@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Search, Printer, ChevronLeft, ChevronRight } from "lucide-react";
+import { PlusCircle, Search, Printer, ChevronLeft, ChevronRight, ClipboardList } from "lucide-react";
 import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
