@@ -23,7 +23,7 @@ interface Client {
   created_at: string;
 }
 
-const emptyForm = { name: "", email: "", email2: "", phone: "", address: "", city: "", contact: "", contact2: "", document: "", notes: "" };
+const emptyForm = { name: "", email: "", email2: "", phone: "", address: "", city: "", contact: "", contact2: "", contact1_phone: "", contact2_phone: "", document: "", notes: "" };
 
 export default function ClientManager() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -64,6 +64,8 @@ export default function ClientManager() {
       city: (client as any).city || "",
       contact: client.contact || "",
       contact2: (client as any).contact2 || "",
+      contact1_phone: (client as any).contact1_phone || "",
+      contact2_phone: (client as any).contact2_phone || "",
       document: client.document || "",
       notes: client.notes || "",
     });
@@ -86,6 +88,8 @@ export default function ClientManager() {
       city: form.city.trim() || null,
       contact: form.contact.trim() || null,
       contact2: form.contact2.trim() || null,
+      contact1_phone: form.contact1_phone.trim() || null,
+      contact2_phone: form.contact2_phone.trim() || null,
       document: form.document.trim() || null,
       notes: form.notes.trim() || null,
     } as any;
@@ -160,12 +164,12 @@ export default function ClientManager() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" onClick={openNew}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Novo Cliente
+              <PlusCircle className="mr-2 h-4 w-4" /> Cadastro de Cliente
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Editar Cliente" : "Novo Cliente"}</DialogTitle>
+              <DialogTitle>{editingId ? "Editar Cliente" : "Cadastro de Cliente"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
@@ -209,12 +213,22 @@ export default function ClientManager() {
                     placeholder="Nome da cidade"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Contato 1</Label>
+                  <Label>Nome do Contato 1</Label>
                   <Input
                     value={form.contact}
                     onChange={(e) => update("contact", e.target.value)}
                     placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Telefone 1</Label>
+                  <Input
+                    value={form.contact1_phone}
+                    onChange={(e) => update("contact1_phone", e.target.value)}
+                    placeholder="(00) 00000-0000"
                   />
                 </div>
                 <div className="space-y-2">
@@ -225,12 +239,22 @@ export default function ClientManager() {
                     placeholder="email@exemplo.com"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Contato 2</Label>
+                  <Label>Nome do Contato 2</Label>
                   <Input
                     value={form.contact2}
                     onChange={(e) => update("contact2", e.target.value)}
                     placeholder="Nome do contato"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Telefone 2</Label>
+                  <Input
+                    value={form.contact2_phone}
+                    onChange={(e) => update("contact2_phone", e.target.value)}
+                    placeholder="(00) 00000-0000"
                   />
                 </div>
                 <div className="space-y-2">
