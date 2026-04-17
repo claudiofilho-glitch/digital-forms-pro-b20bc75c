@@ -409,7 +409,6 @@ export default function OrderDetail() {
                   existingSignature={order.technician_signature}
                   existingDate={order.technician_signed_at}
                   onSave={handleTechSignature}
-                  disabled={!canEdit}
                 />
                 <SignaturePad
                   label="Assinatura do cliente"
@@ -418,7 +417,6 @@ export default function OrderDetail() {
                   existingName={order.client_signer_name}
                   existingDate={order.client_signed_at}
                   onSave={handleClientSignature}
-                  disabled={!canEdit}
                 />
               </div>
             </div>
