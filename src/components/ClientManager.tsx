@@ -216,15 +216,15 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Nome do Contato 1</Label>
+                  <Label>Contato Principal</Label>
                   <Input
                     value={form.contact}
                     onChange={(e) => update("contact", e.target.value)}
-                    placeholder="Nome do contato"
+                    placeholder="Nome do contato principal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Telefone 1</Label>
+                  <Label>Telefone Principal</Label>
                   <Input
                     value={form.contact1_phone}
                     onChange={(e) => update("contact1_phone", e.target.value)}
@@ -232,7 +232,7 @@ export default function ClientManager() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>E-mail 1</Label>
+                  <Label>E-mail Principal</Label>
                   <Input
                     value={form.email}
                     onChange={(e) => update("email", e.target.value)}
@@ -242,15 +242,15 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Nome do Contato 2</Label>
+                  <Label>Contato Secundário</Label>
                   <Input
                     value={form.contact2}
                     onChange={(e) => update("contact2", e.target.value)}
-                    placeholder="Nome do contato"
+                    placeholder="Nome do contato secundário"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Telefone 2</Label>
+                  <Label>Telefone Secundário</Label>
                   <Input
                     value={form.contact2_phone}
                     onChange={(e) => update("contact2_phone", e.target.value)}
@@ -258,7 +258,7 @@ export default function ClientManager() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>E-mail 2</Label>
+                  <Label>E-mail Secundário</Label>
                   <Input
                     value={form.email2}
                     onChange={(e) => update("email2", e.target.value)}
