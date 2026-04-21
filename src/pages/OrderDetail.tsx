@@ -99,6 +99,16 @@ export default function OrderDetail() {
           .in("user_id", userIds);
         setTechnicians(profiles || []);
       });
+
+    // Fetch checklist
+    supabase
+      .from("os_checklist_responses")
+      .select("*")
+      .eq("order_id", id)
+      .order("created_at")
+      .then(({ data }) => {
+        if (data) setChecklist(data);
+      });
   }, [id]);
 
   const handleAssign = async (techUserId: string) => {
