@@ -195,34 +195,6 @@ export default function OrderDetail() {
     pdf.save(`OS_${order.order_number}.pdf`);
   };
 
-  const handleChecklistToggle = async (responseId: string, checked: boolean) => {
-    if (!order || !user) return;
-    const { error } = await supabase
-      .from("os_checklist_responses")
-      .update({
-        checked,
-        checked_at: checked ? new Date().toISOString() : null,
-        checked_by_name: checked ? (user?.user_metadata?.full_name || user?.email || "Técnico") : null,
-      })
-      .eq("id", responseId);
-
-    if (error) {
-      toast({ title: "Erro ao atualizar checklist", description: error.message, variant: "destructive" });
-    } else {
-      setChecklist((prev) =>
-        prev.map((item) =>
-          item.id === responseId
-            ? {
-                ...item,
-                checked,
-                checked_at: checked ? new Date().toISOString() : null,
-                checked_by_name: checked ? (user?.user_metadata?.full_name || user?.email || "Técnico") : null,
-              }
-            : item
-        )
-      );
-    }
-  };
 
   if (loading) {
     return (
