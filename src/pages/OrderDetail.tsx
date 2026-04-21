@@ -404,13 +404,15 @@ export default function OrderDetail() {
             </div>
           )}
 
-          {/* Checklist section */}
-          <div className="border-t pt-6">
-            <MaintenanceChecklist
-              orderId={order.id}
-              canEdit={canEdit && order.status !== "completed" && order.status !== "cancelled"}
-            />
-          </div>
+          {/* Checklist – only for preventive maintenance */}
+          {order.service_type === "Manutenção Preventiva" && (
+            <div className="border-t pt-6">
+              <MaintenanceChecklist
+                orderId={order.id}
+                canEdit={canEdit && order.status !== "completed" && order.status !== "cancelled"}
+              />
+            </div>
+          )}
 
           {/* Signature block – only when completed or being marked as completed */}
           {(order.status === "completed" || status === "completed") && (
