@@ -20,6 +20,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
 type Status = Database["public"]["Enums"]["os_status"];
+type ChecklistResponse = Database["public"]["Tables"]["os_checklist_responses"]["Row"];
 
 const SLA_HOURS = 24;
 
