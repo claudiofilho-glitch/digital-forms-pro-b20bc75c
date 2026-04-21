@@ -61,7 +61,7 @@ export default function OrderDetail() {
   const [status, setStatus] = useState<Status>("pending");
   const [technicians, setTechnicians] = useState<{ user_id: string; full_name: string }[]>([]);
   const [assignTo, setAssignTo] = useState("");
-  const [checklist, setChecklist] = useState<ChecklistResponse[]>([]);
+  
 
   const canEdit = role === "admin" || (role === "technician" && order?.assigned_to === user?.id);
   const sla = useSlaCountdown(order?.created_at);
@@ -99,15 +99,7 @@ export default function OrderDetail() {
         setTechnicians(profiles || []);
       });
 
-    // Fetch checklist
-    supabase
-      .from("os_checklist_responses")
-      .select("*")
-      .eq("order_id", id)
-      .order("created_at")
-      .then(({ data }) => {
-        if (data) setChecklist(data);
-      });
+
   }, [id]);
 
   const handleAssign = async (techUserId: string) => {
