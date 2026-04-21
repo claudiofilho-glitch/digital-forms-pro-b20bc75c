@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      checklist_templates: {
+        Row: {
+          active: boolean
+          created_at: string | null
+          id: string
+          item: string
+          order_index: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string | null
+          id?: string
+          item: string
+          order_index?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string | null
+          id?: string
+          item?: string
+          order_index?: number
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           address: string | null
@@ -67,6 +91,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      os_checklist_responses: {
+        Row: {
+          checked: boolean
+          checked_at: string | null
+          checked_by_name: string | null
+          created_at: string | null
+          id: string
+          item: string
+          order_id: string | null
+          template_id: string | null
+        }
+        Insert: {
+          checked?: boolean
+          checked_at?: string | null
+          checked_by_name?: string | null
+          created_at?: string | null
+          id?: string
+          item: string
+          order_id?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          checked?: boolean
+          checked_at?: string | null
+          checked_by_name?: string | null
+          created_at?: string | null
+          id?: string
+          item?: string
+          order_id?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_checklist_responses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_checklist_responses_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
