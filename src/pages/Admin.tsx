@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import ClientManager from "@/components/ClientManager";
+import ChecklistManager from "@/components/ChecklistManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -427,6 +428,9 @@ export default function Admin() {
 
       {/* Client Management */}
       <ClientManager />
+
+      {/* Checklist Templates */}
+      <ChecklistManager />
     </div>
   );
 }
