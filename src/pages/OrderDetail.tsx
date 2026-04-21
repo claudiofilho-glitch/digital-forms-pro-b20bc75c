@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import SignaturePad from "@/components/SignaturePad";
+import MaintenanceChecklist from "@/components/MaintenanceChecklist";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,17 +11,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2, UserPlus, CheckSquare } from "lucide-react";
+import { ArrowLeft, Printer, Calendar, MapPin, User, Wrench, Building2, FileDown, Clock, AlertTriangle, Trash2, UserPlus } from "lucide-react";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type ServiceOrder = Database["public"]["Tables"]["service_orders"]["Row"];
 type Status = Database["public"]["Enums"]["os_status"];
-type ChecklistResponse = Database["public"]["Tables"]["os_checklist_responses"]["Row"];
 
 const SLA_HOURS = 24;
 
@@ -62,7 +61,7 @@ export default function OrderDetail() {
   const [status, setStatus] = useState<Status>("pending");
   const [technicians, setTechnicians] = useState<{ user_id: string; full_name: string }[]>([]);
   const [assignTo, setAssignTo] = useState("");
-  const [checklist, setChecklist] = useState<ChecklistResponse[]>([]);
+  
 
   const canEdit = role === "admin" || (role === "technician" && order?.assigned_to === user?.id);
   const sla = useSlaCountdown(order?.created_at);
@@ -100,15 +99,7 @@ export default function OrderDetail() {
         setTechnicians(profiles || []);
       });
 
-    // Fetch checklist
-    supabase
-      .from("os_checklist_responses")
-      .select("*")
-      .eq("order_id", id)
-      .order("created_at")
-      .then(({ data }) => {
-        if (data) setChecklist(data);
-      });
+
   }, [id]);
 
   const handleAssign = async (techUserId: string) => {
@@ -204,34 +195,6 @@ export default function OrderDetail() {
     pdf.save(`OS_${order.order_number}.pdf`);
   };
 
-  const handleChecklistToggle = async (responseId: string, checked: boolean) => {
-    if (!order || !user) return;
-    const { error } = await supabase
-      .from("os_checklist_responses")
-      .update({
-        checked,
-        checked_at: checked ? new Date().toISOString() : null,
-        checked_by_name: checked ? (user?.user_metadata?.full_name || user?.email || "Técnico") : null,
-      })
-      .eq("id", responseId);
-
-    if (error) {
-      toast({ title: "Erro ao atualizar checklist", description: error.message, variant: "destructive" });
-    } else {
-      setChecklist((prev) =>
-        prev.map((item) =>
-          item.id === responseId
-            ? {
-                ...item,
-                checked,
-                checked_at: checked ? new Date().toISOString() : null,
-                checked_by_name: checked ? (user?.user_metadata?.full_name || user?.email || "Técnico") : null,
-              }
-            : item
-        )
-      );
-    }
-  };
 
   if (loading) {
     return (
@@ -442,50 +405,12 @@ export default function OrderDetail() {
           )}
 
           {/* Checklist section */}
-          {checklist.length > 0 && (
-            <div className="border-t pt-6 space-y-4">
-              <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <CheckSquare className="h-5 w-5" /> Checklist de Atividades
-              </h3>
-              <div className="space-y-2">
-                {checklist.map((item) => (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "flex items-start gap-3 p-3 rounded-lg border transition-colors",
-                      item.checked ? "bg-primary/5 border-primary/20" : "bg-card hover:bg-muted/50"
-                    )}
-                  >
-                    <Checkbox
-                      id={`checklist-${item.id}`}
-                      checked={item.checked}
-                      onCheckedChange={(checked) => handleChecklistToggle(item.id, checked as boolean)}
-                      disabled={!canEdit || order?.status === "completed" || order?.status === "cancelled"}
-                      className="mt-0.5"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <label
-                        htmlFor={`checklist-${item.id}`}
-                        className={cn(
-                          "text-sm font-medium cursor-pointer",
-                          item.checked ? "text-primary line-through" : "text-foreground"
-                        )}
-                      >
-                        {item.item}
-                      </label>
-                      {item.checked && item.checked_at && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Concluído em {new Date(item.checked_at).toLocaleDateString("pt-BR")} às{" "}
-                          {new Date(item.checked_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                          {item.checked_by_name && ` por ${item.checked_by_name}`}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="border-t pt-6">
+            <MaintenanceChecklist
+              orderId={order.id}
+              canEdit={canEdit && order.status !== "completed" && order.status !== "cancelled"}
+            />
+          </div>
 
           {/* Signature block – only when completed or being marked as completed */}
           {(order.status === "completed" || status === "completed") && (
