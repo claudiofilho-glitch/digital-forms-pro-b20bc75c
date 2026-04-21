@@ -405,50 +405,12 @@ export default function OrderDetail() {
           )}
 
           {/* Checklist section */}
-          {checklist.length > 0 && (
-            <div className="border-t pt-6 space-y-4">
-              <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <CheckSquare className="h-5 w-5" /> Checklist de Atividades
-              </h3>
-              <div className="space-y-2">
-                {checklist.map((item) => (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "flex items-start gap-3 p-3 rounded-lg border transition-colors",
-                      item.checked ? "bg-primary/5 border-primary/20" : "bg-card hover:bg-muted/50"
-                    )}
-                  >
-                    <Checkbox
-                      id={`checklist-${item.id}`}
-                      checked={item.checked}
-                      onCheckedChange={(checked) => handleChecklistToggle(item.id, checked as boolean)}
-                      disabled={!canEdit || order?.status === "completed" || order?.status === "cancelled"}
-                      className="mt-0.5"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <label
-                        htmlFor={`checklist-${item.id}`}
-                        className={cn(
-                          "text-sm font-medium cursor-pointer",
-                          item.checked ? "text-primary line-through" : "text-foreground"
-                        )}
-                      >
-                        {item.item}
-                      </label>
-                      {item.checked && item.checked_at && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Concluído em {new Date(item.checked_at).toLocaleDateString("pt-BR")} às{" "}
-                          {new Date(item.checked_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                          {item.checked_by_name && ` por ${item.checked_by_name}`}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="border-t pt-6">
+            <MaintenanceChecklist
+              orderId={order.id}
+              canEdit={canEdit && order.status !== "completed" && order.status !== "cancelled"}
+            />
+          </div>
 
           {/* Signature block – only when completed or being marked as completed */}
           {(order.status === "completed" || status === "completed") && (
