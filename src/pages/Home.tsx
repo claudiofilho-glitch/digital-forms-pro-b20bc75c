@@ -188,7 +188,7 @@ export default function Home() {
                 Tecnologia e segurança que você pode confiar
               </h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                Há mais de 15 anos protegendo pessoas, patrimônios e negócios com
+                Há mais de 25 anos protegendo pessoas, patrimônios e negócios com
                 soluções completas e atendimento técnico de excelência.
               </p>
               <ul className="mt-6 space-y-3">
