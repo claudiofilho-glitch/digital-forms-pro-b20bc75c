@@ -116,6 +116,12 @@ export default function OrderDetail() {
     }
   };
 
+  const hasChanges = order
+    ? status !== order.status ||
+      notes !== (order.notes || "") ||
+      assignTo !== (order.assigned_to || "")
+    : false;
+
   const handleUpdate = async () => {
     if (!order) return;
     const selectedTech = technicians.find((t) => t.user_id === assignTo);
@@ -125,7 +131,9 @@ export default function OrderDetail() {
       assigned_to: assignTo || null,
       assigned_name: selectedTech?.full_name || "",
     };
-    if (status === "completed") updates.completion_date = new Date().toISOString();
+    if (status === "completed") {
+      updates.completion_date = new Date().toISOString();
+    }
 
     const { error } = await supabase
       .from("service_orders")
