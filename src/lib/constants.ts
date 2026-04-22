@@ -22,6 +22,13 @@ export const SERVICE_TYPE_MAP: Record<string, { label: string; class: string }> 
 export const SERVICE_TYPES = Object.keys(SERVICE_TYPE_MAP);
 
 // Keep PRIORITY_MAP for backward compat if needed
+export const ROLE_CONFIG = {
+  admin: { label: "Administrador", class: "bg-purple-100 text-purple-800" },
+  technician: { label: "Técnico", class: "bg-blue-100 text-blue-800" },
+  user: { label: "Operador", class: "bg-gray-100 text-gray-800" },
+  administrative: { label: "Administrativo", class: "bg-teal-100 text-teal-800" },
+} as const;
+
 export const PRIORITY_MAP = {
   low: { label: "Baixa", class: "bg-muted text-muted-foreground" },
   medium: { label: "Média", class: "status-pending" },
