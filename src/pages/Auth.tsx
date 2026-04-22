@@ -23,7 +23,7 @@ export default function Auth() {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate("/");
+      navigate("/helpdesk");
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {

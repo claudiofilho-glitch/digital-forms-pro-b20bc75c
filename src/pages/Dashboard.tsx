@@ -126,7 +126,7 @@ export default function Dashboard() {
             <Printer className="mr-2 h-4 w-4" />
             Imprimir
           </Button>
-          <Link to="/nova-os">
+          <Link to="/helpdesk/nova-os">
             <Button size="sm">
               <PlusCircle className="mr-2 h-4 w-4" />
               Nova OS
@@ -188,7 +188,7 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground max-w-sm">
                 Tente ajustar os filtros ou crie uma nova ordem de serviço
               </p>
-              <Link to="/nova-os">
+              <Link to="/helpdesk/nova-os">
                 <Button size="sm" className="mt-2">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Nova OS
@@ -217,7 +217,7 @@ export default function Dashboard() {
                       <TableRow
                         key={order.id}
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => navigate(`/os/${order.id}`)}
+                        onClick={() => navigate(`/helpdesk/os/${order.id}`)}
                       >
                         <TableCell className="font-mono text-sm font-medium">
                           {order.order_number}
