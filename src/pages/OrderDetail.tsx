@@ -63,7 +63,10 @@ export default function OrderDetail() {
   const [assignTo, setAssignTo] = useState("");
   
 
-  const canEdit = role === "admin" || (role === "technician" && order?.assigned_to === user?.id);
+  const canEdit =
+    role === "admin" ||
+    role === "administrative" ||
+    (role === "technician" && order?.assigned_to === user?.id);
   const sla = useSlaCountdown(order?.created_at);
   const slaFinished = order?.status === "completed" || order?.status === "cancelled";
 
