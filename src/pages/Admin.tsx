@@ -339,7 +339,7 @@ export default function Admin() {
                   <TableHead>Nome</TableHead>
                   <TableHead className="hidden sm:table-cell">Telefone</TableHead>
                   <TableHead>Perfil Atual</TableHead>
-                  <TableHead>Alterar Perfil</TableHead>
+                  {isAdmin && <TableHead>Alterar Perfil</TableHead>}
                   <TableHead className="hidden md:table-cell">Cadastro</TableHead>
                   <TableHead className="w-[100px]">Ações</TableHead>
                 </TableRow>
@@ -347,7 +347,7 @@ export default function Admin() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-10 text-muted-foreground">
                       Nenhum operador encontrado.
                     </TableCell>
                   </TableRow>
@@ -367,31 +367,47 @@ export default function Admin() {
                             {rc.label}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Select value={u.role} onValueChange={(v) => requestRoleChange(u, v as AppRole)}>
-                            <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="admin">Administrador</SelectItem>
-                              <SelectItem value="technician">Técnico</SelectItem>
-                              <SelectItem value="user">Operador</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell>
+                            <Select value={u.role} onValueChange={(v) => requestRoleChange(u, v as AppRole)}>
+                              <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="admin">Administrador</SelectItem>
+                                <SelectItem value="administrative">Administrativo</SelectItem>
+                                <SelectItem value="technician">Técnico</SelectItem>
+                                <SelectItem value="user">Operador</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        )}
                         <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                           {new Date(u.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(u)} title="Editar">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              disabled={!isAdmin}
+                              onClick={() => openEditDialog(u)}
+                              title={isAdmin ? "Editar" : "Apenas administradores podem editar"}
+                            >
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive"
-                              disabled={isSelf}
+                              disabled={!isAdmin || isSelf}
                               onClick={() => setDeleteDialog({ open: true, user: u })}
-                              title={isSelf ? "Não é possível excluir a si mesmo" : "Excluir"}
+                              title={
+                                !isAdmin
+                                  ? "Apenas administradores podem excluir"
+                                  : isSelf
+                                  ? "Não é possível excluir a si mesmo"
+                                  : "Excluir"
+                              }
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
