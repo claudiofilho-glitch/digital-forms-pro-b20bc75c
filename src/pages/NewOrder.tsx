@@ -164,8 +164,8 @@ export default function NewOrder() {
                 <Input id="location" value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex: Recepção A" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Data prevista</Label>
-                <Input id="date" type="date" value={form.scheduled_date} onChange={(e) => update("scheduled_date", e.target.value)} />
+                <Label htmlFor="date">Data e Hora Previstos</Label>
+                <Input id="date" type="datetime-local" value={form.scheduled_date} onChange={(e) => update("scheduled_date", e.target.value)} />
               </div>
             </div>
 
