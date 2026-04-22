@@ -449,6 +449,29 @@ export default function Admin() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Role Change Confirmation */}
+      <AlertDialog
+        open={roleChangeDialog.open}
+        onOpenChange={(open) => !open && setRoleChangeDialog({ open: false, user: null, newRole: null })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Alterar Perfil
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja alterar o perfil de <strong>{roleChangeDialog.user?.full_name}</strong> para{" "}
+              <strong>{roleChangeDialog.newRole ? ROLE_CONFIG[roleChangeDialog.newRole].label : ""}</strong>? Esta ação afeta as permissões do usuário imediatamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRoleChange}>Confirmar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Client Management */}
       <ClientManager />
 
