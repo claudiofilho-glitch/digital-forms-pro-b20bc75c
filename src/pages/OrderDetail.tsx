@@ -323,9 +323,9 @@ export default function OrderDetail() {
             <InfoItem icon={MapPin} label="Local" value={order.location || "—"} />
             <InfoItem icon={User} label="Solicitante" value={order.requester_name} />
             <InfoItem icon={User} label="Técnico Responsável" value={order.assigned_name || "Não atribuído"} />
-            <InfoItem icon={Calendar} label="Data Prevista" value={order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString("pt-BR") : "—"} />
+            <InfoItem icon={Calendar} label="Data e Hora Previstos" value={order.scheduled_date ? new Date(order.scheduled_date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
+            <InfoItem icon={Clock} label="Hora de Conclusão" value={order.completion_date ? new Date(order.completion_date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
           </div>
-
           {/* Quick assign buttons (visible for admins when not in edit mode too) */}
           {role === "admin" && order.status !== "completed" && order.status !== "cancelled" && (
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
