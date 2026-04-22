@@ -40,7 +40,7 @@ const services = [
 
 const differentials = [
   "Equipe técnica certificada e experiente",
-  "Atendimento 24h em todo o estado",
+  "Atendimento em todo o Brasil",
   "SLA monitorado em tempo real",
   "Suporte presencial e remoto",
 ];
