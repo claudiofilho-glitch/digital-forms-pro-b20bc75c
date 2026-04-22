@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle, Pencil, Trash2, AlertTriangle } from "lucide-react";
+import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle, Pencil, Trash2, AlertTriangle, Briefcase } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
@@ -31,6 +31,7 @@ interface UserRow {
 
 const ROLE_CONFIG: Record<AppRole, { label: string; icon: typeof Shield; class: string }> = {
   admin: { label: "Administrador", icon: Shield, class: "bg-destructive/15 text-destructive" },
+  administrative: { label: "Administrativo", icon: Briefcase, class: "bg-teal-100 text-teal-800" },
   technician: { label: "Técnico", icon: Wrench, class: "bg-primary/15 text-primary" },
   user: { label: "Operador", icon: UserIcon, class: "bg-muted text-muted-foreground" },
 };
