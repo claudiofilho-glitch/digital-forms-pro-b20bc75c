@@ -56,6 +56,9 @@ export default function Admin() {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; user: UserRow | null }>({ open: false, user: null });
   const [deleting, setDeleting] = useState(false);
 
+  // Role change confirmation
+  const [roleChangeDialog, setRoleChangeDialog] = useState<{ open: boolean; user: UserRow | null; newRole: AppRole | null }>({ open: false, user: null, newRole: null });
+
   useEffect(() => {
     if (role === "admin") fetchUsers();
   }, [role]);
@@ -107,6 +110,20 @@ export default function Admin() {
     }
   };
 
+  const requestRoleChange = (u: UserRow, newRole: AppRole) => {
+    if (u.role === newRole) return;
+    // Block demoting the only admin
+    if (u.role === "admin" && newRole !== "admin" && stats.admins === 1) {
+      toast({
+        title: "Ação bloqueada",
+        description: "Não é possível rebaixar o único administrador do sistema.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setRoleChangeDialog({ open: true, user: u, newRole });
+  };
+
   const changeRole = async (userId: string, newRole: AppRole) => {
     const { error: delError } = await supabase.from("user_roles").delete().eq("user_id", userId);
     if (delError) {
@@ -121,6 +138,12 @@ export default function Admin() {
 
     setUsers((prev) => prev.map((u) => (u.user_id === userId ? { ...u, role: newRole } : u)));
     toast({ title: "Perfil atualizado", description: `Perfil alterado para ${ROLE_CONFIG[newRole].label}.` });
+  };
+
+  const confirmRoleChange = async () => {
+    if (!roleChangeDialog.user || !roleChangeDialog.newRole) return;
+    await changeRole(roleChangeDialog.user.user_id, roleChangeDialog.newRole);
+    setRoleChangeDialog({ open: false, user: null, newRole: null });
   };
 
   const handleCreateUser = async () => {
@@ -336,7 +359,7 @@ export default function Admin() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Select value={u.role} onValueChange={(v) => changeRole(u.user_id, v as AppRole)}>
+                          <Select value={u.role} onValueChange={(v) => requestRoleChange(u, v as AppRole)}>
                             <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="admin">Administrador</SelectItem>
@@ -422,6 +445,29 @@ export default function Admin() {
             >
               {deleting ? "Excluindo..." : "Excluir"}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Role Change Confirmation */}
+      <AlertDialog
+        open={roleChangeDialog.open}
+        onOpenChange={(open) => !open && setRoleChangeDialog({ open: false, user: null, newRole: null })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Alterar Perfil
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja alterar o perfil de <strong>{roleChangeDialog.user?.full_name}</strong> para{" "}
+              <strong>{roleChangeDialog.newRole ? ROLE_CONFIG[roleChangeDialog.newRole].label : ""}</strong>? Esta ação afeta as permissões do usuário imediatamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRoleChange}>Confirmar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

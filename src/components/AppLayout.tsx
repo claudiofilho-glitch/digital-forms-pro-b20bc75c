@@ -27,18 +27,26 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </Link>
 
           <nav className="flex items-center gap-1">
-            {navItems.map(({ to, label, icon: Icon }) => (
-              <Link key={to} to={to}>
-                <Button
-                  variant={location.pathname === to ? "default" : "ghost"}
-                  size="sm"
-                  className="gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{label}</span>
-                </Button>
-              </Link>
-            ))}
+            {navItems.map(({ to, label, icon: Icon }) => {
+              const isActive = location.pathname === to;
+              return (
+                <Link key={to} to={to}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Icon
+                      className={cn(
+                        "h-4 w-4",
+                        isActive ? "text-primary-foreground" : "text-primary sm:text-current"
+                      )}
+                    />
+                    <span className="hidden sm:inline">{label}</span>
+                  </Button>
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3">

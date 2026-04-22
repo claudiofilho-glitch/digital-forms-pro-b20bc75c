@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, Search, Printer, ChevronLeft, ChevronRight, ClipboardList } from "lucide-react";
 import { STATUS_MAP, SERVICE_TYPE_MAP } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -32,26 +32,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState("all");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-
-  useEffect(() => {
-    fetchOrders();
-
-    const channel = supabase
-      .channel("service_orders_changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "service_orders" },
-        () => {
-          fetchOrders();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  const [stats, setStats] = useState({ total: 0, pending: 0, inProgress: 0, completed: 0 });
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -64,6 +45,50 @@ export default function Dashboard() {
     setTotalCount(count || 0);
     setLoading(false);
   };
+
+  const fetchStats = async () => {
+    const [totalRes, pendingRes, inProgressRes, completedRes] = await Promise.all([
+      supabase.from("service_orders").select("*", { count: "exact", head: true }),
+      supabase.from("service_orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("service_orders").select("*", { count: "exact", head: true }).eq("status", "in_progress"),
+      supabase.from("service_orders").select("*", { count: "exact", head: true }).eq("status", "completed"),
+    ]);
+    setStats({
+      total: totalRes.count || 0,
+      pending: pendingRes.count || 0,
+      inProgress: inProgressRes.count || 0,
+      completed: completedRes.count || 0,
+    });
+  };
+
+  useEffect(() => {
+    fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  useEffect(() => {
+    fetchStats();
+    const channel = supabase
+      .channel("service_orders_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "service_orders" },
+        () => {
+          fetchOrders();
+          fetchStats();
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, tab, statusFilter]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
@@ -78,13 +103,6 @@ export default function Dashboard() {
     const matchTab = tab === "all" || o.status === tab;
     return matchSearch && matchStatus && matchPriority && matchTab;
   });
-
-  const stats = {
-    total: orders.length,
-    pending: orders.filter((o) => o.status === "pending").length,
-    inProgress: orders.filter((o) => o.status === "in_progress").length,
-    completed: orders.filter((o) => o.status === "completed").length,
-  };
 
   const handlePrint = () => window.print();
 
@@ -130,7 +148,7 @@ export default function Dashboard() {
       <div className="space-y-4">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
-            <TabsTrigger value="all">Todas ({orders.length})</TabsTrigger>
+            <TabsTrigger value="all">Todas ({stats.total})</TabsTrigger>
             <TabsTrigger value="pending">Pendentes ({stats.pending})</TabsTrigger>
             <TabsTrigger value="in_progress">Em andamento ({stats.inProgress})</TabsTrigger>
             <TabsTrigger value="completed">Concluídas ({stats.completed})</TabsTrigger>

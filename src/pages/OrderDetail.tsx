@@ -116,6 +116,12 @@ export default function OrderDetail() {
     }
   };
 
+  const hasChanges = order
+    ? status !== order.status ||
+      notes !== (order.notes || "") ||
+      assignTo !== (order.assigned_to || "")
+    : false;
+
   const handleUpdate = async () => {
     if (!order) return;
     const selectedTech = technicians.find((t) => t.user_id === assignTo);
@@ -125,7 +131,9 @@ export default function OrderDetail() {
       assigned_to: assignTo || null,
       assigned_name: selectedTech?.full_name || "",
     };
-    if (status === "completed") updates.completion_date = new Date().toISOString();
+    if (status === "completed") {
+      updates.completion_date = new Date().toISOString();
+    }
 
     const { error } = await supabase
       .from("service_orders")
@@ -328,7 +336,7 @@ export default function OrderDetail() {
           </div>
           {/* Quick assign buttons (visible for admins when not in edit mode too) */}
           {role === "admin" && order.status !== "completed" && order.status !== "cancelled" && (
-            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3 print:hidden">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <UserPlus className="h-4 w-4" /> Atribuir Técnico
               </h3>
@@ -370,7 +378,7 @@ export default function OrderDetail() {
 
           {/* Edit section */}
           {canEdit && (
-            <div className="border-t pt-6 space-y-4">
+            <div className="border-t pt-6 space-y-4 print:hidden">
               <h3 className="font-semibold text-foreground">Atualizar OS</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -397,7 +405,10 @@ export default function OrderDetail() {
               )}
               <Button
                 onClick={handleUpdate}
-                disabled={status === "completed" && (!order.technician_signature || !order.client_signature)}
+                disabled={
+                  !hasChanges ||
+                  (status === "completed" && (!order.technician_signature || !order.client_signature))
+                }
               >
                 Salvar alterações
               </Button>
