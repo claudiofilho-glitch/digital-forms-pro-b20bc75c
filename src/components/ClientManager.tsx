@@ -158,7 +158,7 @@ export default function ClientManager() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <Building2 className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">Clientes</h2>
+          <h2 className="text-2xl font-bold">Gerenciar Clientes</h2>
           <span className="text-sm text-muted-foreground">({clients.length})</span>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
