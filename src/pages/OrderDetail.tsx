@@ -159,7 +159,7 @@ export default function OrderDetail() {
       toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "OS excluída com sucesso! Número disponível para reutilização." });
-      navigate("/");
+      navigate("/helpdesk");
     }
   };
 
@@ -243,7 +243,7 @@ export default function OrderDetail() {
     <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
       {/* Action bar */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
+        <Button variant="ghost" onClick={() => navigate("/helpdesk")} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
         <div className="flex gap-2">

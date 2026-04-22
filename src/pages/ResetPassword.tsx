@@ -31,7 +31,7 @@ export default function ResetPassword() {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast({ title: "Senha atualizada!", description: "Você já pode usar sua nova senha." });
-      navigate("/");
+      navigate("/helpdesk");
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     } finally {

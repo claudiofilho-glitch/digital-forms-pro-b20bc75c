@@ -74,7 +74,7 @@ export default function Admin() {
     );
   }
 
-  if (role !== "admin" && role !== "administrative") return <Navigate to="/" replace />;
+  if (role !== "admin" && role !== "administrative") return <Navigate to="/helpdesk" replace />;
 
   const fetchUsers = async () => {
     setLoading(true);

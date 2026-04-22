@@ -87,7 +87,7 @@ export default function NewOrder() {
       if (error) throw error;
 
       toast({ title: "OS criada com sucesso!" });
-      navigate("/");
+      navigate("/helpdesk");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Tente novamente.";
       toast({ title: "Erro ao criar OS", description: message, variant: "destructive" });
@@ -193,7 +193,7 @@ export default function NewOrder() {
               <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? "Criando..." : "Criar Ordem de Serviço"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => navigate("/")}>
+              <Button type="button" variant="outline" onClick={() => navigate("/helpdesk")}>
                 Cancelar
               </Button>
             </div>
