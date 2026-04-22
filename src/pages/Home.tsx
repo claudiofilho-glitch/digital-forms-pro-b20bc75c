@@ -105,7 +105,7 @@ export default function Home() {
               <p className="mt-5 text-lg text-primary-foreground/85 max-w-xl">
                 A Interative Tecnosegurança oferece soluções completas em
                 segurança eletrônica, automação e infraestrutura de TI com mais de
-                15 anos de tecnologia a serviço do seu atendimento.
+                25 anos de tecnologia a serviço do seu atendimento.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#contato">
