@@ -248,54 +248,60 @@ export default function Admin() {
           <h1 className="text-2xl font-bold">Gerenciar Operadores</h1>
           <p className="text-muted-foreground text-sm">Administre perfis e permissões dos operadores</p>
         </div>
-        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Novo Operador
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Cadastrar Novo Operador</DialogTitle>
-              <DialogDescription>Preencha os dados para criar um novo acesso ao sistema.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <Label>Nome completo</Label>
-                <Input value={newUser.full_name} onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })} placeholder="Nome do operador" />
-              </div>
-              <div className="space-y-2">
-                <Label>E-mail</Label>
-                <Input type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="email@exemplo.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Senha</Label>
-                <Input type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="Mínimo 6 caracteres" />
-              </div>
-              <div className="space-y-2">
-                <Label>Tipo de operador</Label>
-                <RadioGroup value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v as AppRole })}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="user" id="role-user" />
-                    <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Operador</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="technician" id="role-tech" />
-                    <Label htmlFor="role-tech" className="flex items-center gap-1"><Wrench className="h-3 w-3" /> Técnico</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="admin" id="role-admin" />
-                    <Label htmlFor="role-admin" className="flex items-center gap-1"><Shield className="h-3 w-3" /> Administrador</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <Button onClick={handleCreateUser} disabled={creating} className="w-full">
-                {creating ? "Criando..." : "Criar Operador"}
+        {isAdmin && (
+          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <PlusCircle className="h-4 w-4" />
+                Novo Operador
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Cadastrar Novo Operador</DialogTitle>
+                <DialogDescription>Preencha os dados para criar um novo acesso ao sistema.</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <Label>Nome completo</Label>
+                  <Input value={newUser.full_name} onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })} placeholder="Nome do operador" />
+                </div>
+                <div className="space-y-2">
+                  <Label>E-mail</Label>
+                  <Input type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="email@exemplo.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Senha</Label>
+                  <Input type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="Mínimo 6 caracteres" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Tipo de operador</Label>
+                  <RadioGroup value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v as AppRole })}>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="user" id="role-user" />
+                      <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Operador</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="technician" id="role-tech" />
+                      <Label htmlFor="role-tech" className="flex items-center gap-1"><Wrench className="h-3 w-3" /> Técnico</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="administrative" id="role-administrative" />
+                      <Label htmlFor="role-administrative" className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> Administrativo</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="admin" id="role-admin" />
+                      <Label htmlFor="role-admin" className="flex items-center gap-1"><Shield className="h-3 w-3" /> Administrador</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <Button onClick={handleCreateUser} disabled={creating} className="w-full">
+                  {creating ? "Criando..." : "Criar Operador"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {/* Stats */}
