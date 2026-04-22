@@ -60,8 +60,10 @@ export default function Admin() {
   // Role change confirmation
   const [roleChangeDialog, setRoleChangeDialog] = useState<{ open: boolean; user: UserRow | null; newRole: AppRole | null }>({ open: false, user: null, newRole: null });
 
+  const isAdmin = role === "admin";
+
   useEffect(() => {
-    if (role === "admin") fetchUsers();
+    if (role === "admin" || role === "administrative") fetchUsers();
   }, [role]);
 
   if (authLoading) {
@@ -72,7 +74,7 @@ export default function Admin() {
     );
   }
 
-  if (role !== "admin") return <Navigate to="/" replace />;
+  if (role !== "admin" && role !== "administrative") return <Navigate to="/" replace />;
 
   const fetchUsers = async () => {
     setLoading(true);
