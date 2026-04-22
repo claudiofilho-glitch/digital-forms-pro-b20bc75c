@@ -53,24 +53,9 @@ export default function NewOrder() {
   const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
 
   const getNextOrderNumber = async () => {
-    const currentYear = new Date().getFullYear().toString();
-    const { data, error } = await supabase
-      .from("service_orders")
-      .select("order_number")
-      .like("order_number", `${currentYear}-%`);
-
+    const { data, error } = await supabase.rpc("get_next_order_number");
     if (error) throw error;
-
-    const usedNumbers = new Set(
-      (data || [])
-        .map(({ order_number }) => Number(order_number.split("-")[1]))
-        .filter((value) => Number.isFinite(value) && value > 0)
-    );
-
-    let nextNumber = 1;
-    while (usedNumbers.has(nextNumber)) nextNumber += 1;
-
-    return `${currentYear}-${String(nextNumber).padStart(4, "0")}`;
+    return data as string;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,7 +150,13 @@ export default function NewOrder() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="date">Data e Hora Previstos</Label>
-                <Input id="date" type="datetime-local" value={form.scheduled_date} onChange={(e) => update("scheduled_date", e.target.value)} />
+                <Input
+                  id="date"
+                  type="datetime-local"
+                  value={form.scheduled_date}
+                  onChange={(e) => update("scheduled_date", e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
+                />
               </div>
             </div>
 
