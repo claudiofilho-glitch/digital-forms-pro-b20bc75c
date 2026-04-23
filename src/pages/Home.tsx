@@ -232,7 +232,7 @@ export default function Home() {
             <div className="mt-8 grid sm:grid-cols-3 gap-4 text-sm">
               <div className="rounded-lg border bg-card p-5">
                 <p className="font-semibold text-foreground">Telefone</p>
-                <p className="mt-1 text-muted-foreground">(00) 0000-0000</p>
+                <p className="mt-1 text-muted-foreground">(51) 3013-3264</p>
               </div>
               <div className="rounded-lg border bg-card p-5">
                 <p className="font-semibold text-foreground">E-mail</p>
@@ -240,7 +240,7 @@ export default function Home() {
               </div>
               <div className="rounded-lg border bg-card p-5">
                 <p className="font-semibold text-foreground">Atendimento</p>
-                <p className="mt-1 text-muted-foreground">Seg a Sex • 8h às 18h</p>
+                <p className="mt-1 text-muted-foreground">Seg a Sex • 8h às 17h</p>
               </div>
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <img src={logo} alt="Interative" className="h-10 w-auto" />
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Interative Tecnosegurança. Todos os direitos reservados.
+              © {new Date().getFullYear()} Interative Tecnologia. Todos os direitos reservados.
             </span>
           </div>
           <Link to="/helpdesk" className="text-sm text-primary hover:underline">
