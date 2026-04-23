@@ -103,7 +103,7 @@ export default function Home() {
                 <span className="text-accent">mais importa</span>
               </h1>
               <p className="mt-5 text-lg text-primary-foreground/85 max-w-xl">
-                A Interative Tecnosegurança oferece soluções completas em
+                A Interative Tecnologia oferece soluções completas em
                 segurança eletrônica, automação e infraestrutura de TI com mais de
                 25 anos de tecnologia a serviço do seu atendimento.
               </p>
