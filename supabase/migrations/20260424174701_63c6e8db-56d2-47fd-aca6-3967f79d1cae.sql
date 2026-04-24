@@ -1,0 +1,1 @@
+DELETE FROM public.service_orders WHERE order_number = 'TEST-EMAIL-001';
