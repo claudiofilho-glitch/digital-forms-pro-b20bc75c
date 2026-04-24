@@ -103,8 +103,8 @@ serve(async (req) => {
     const client = new SMTPClient({
       connection: {
         hostname: "smtp.gmail.com",
-        port: 587,
-        tls: false,
+        port: 465,
+        tls: true,
         auth: {
           username: SMTP_USER,
           password: SMTP_PASS,
