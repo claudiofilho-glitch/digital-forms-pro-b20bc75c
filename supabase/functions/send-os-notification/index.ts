@@ -1,9 +1,14 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const SMTP_USER = Deno.env.get("SMTP_USER")!;
 const SMTP_PASS = Deno.env.get("SMTP_PASS")!;
 const APP_URL = "https://digital-forms-pro.lovable.app";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const EVENT_CONFIG: Record<string, {
   subject: (os: any) => string;
@@ -21,7 +26,7 @@ const EVENT_CONFIG: Record<string, {
           <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Tipo</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.service_type || "—"}</td></tr>
           <tr><td style="padding: 8px;"><strong>Solicitante</strong></td><td style="padding: 8px;">${os.requester_name}</td></tr>
         </table>
-        <a href="${APP_URL}/order/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS no sistema</a>
+        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS no sistema</a>
       </div>
     `,
   },
@@ -36,7 +41,7 @@ const EVENT_CONFIG: Record<string, {
           <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Cliente</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.client_name || "—"}</td></tr>
           <tr><td style="padding: 8px;"><strong>Tipo</strong></td><td style="padding: 8px;">${os.service_type || "—"}</td></tr>
         </table>
-        <a href="${APP_URL}/order/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Abrir OS</a>
+        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Abrir OS</a>
       </div>
     `,
   },
@@ -51,7 +56,7 @@ const EVENT_CONFIG: Record<string, {
           <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Cliente</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.client_name || "—"}</td></tr>
           <tr><td style="padding: 8px;"><strong>Técnico</strong></td><td style="padding: 8px;">${os.assigned_name || "Não atribuído"}</td></tr>
         </table>
-        <a href="${APP_URL}/order/${os.id}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS urgente</a>
+        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS urgente</a>
       </div>
     `,
   },
@@ -66,45 +71,68 @@ const EVENT_CONFIG: Record<string, {
           <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Técnico</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.assigned_name || "—"}</td></tr>
           <tr><td style="padding: 8px;"><strong>Observações</strong></td><td style="padding: 8px;">${os.notes || "—"}</td></tr>
         </table>
-        <a href="${APP_URL}/order/${os.id}" style="display: inline-block; background: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver detalhes</a>
+        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver detalhes</a>
       </div>
     `,
   },
 };
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
     const { event, order, recipient_email } = await req.json();
 
     if (!event || !order || !recipient_email) {
-      return new Response(JSON.stringify({ error: "Dados inválidos" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Dados inválidos" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const config = EVENT_CONFIG[event];
     if (!config) {
-      return new Response(JSON.stringify({ error: "Evento desconhecido" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Evento desconhecido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const client = new SmtpClient();
-    await client.connectTLS({
-      hostname: "smtp.gmail.com",
-      port: 465,
-      username: SMTP_USER,
-      password: SMTP_PASS,
+    const client = new SMTPClient({
+      connection: {
+        hostname: "smtp.gmail.com",
+        port: 465,
+        tls: true,
+        auth: {
+          username: SMTP_USER,
+          password: SMTP_PASS,
+        },
+      },
     });
 
     await client.send({
       from: SMTP_USER,
       to: recipient_email,
       subject: config.subject(order),
-      content: config.body(order),
+      content: "Visualize este e-mail em um cliente compatível com HTML.",
+      html: config.body(order),
     });
 
     await client.close();
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    console.log(`Email enviado: evento=${event} para=${recipient_email} OS=${order.order_number}`);
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("SMTP error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
