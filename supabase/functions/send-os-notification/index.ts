@@ -97,7 +97,7 @@ serve(async (req) => {
       from: SMTP_USER,
       to: recipient_email,
       subject: config.subject(order),
-      html: config.body(order),
+      content: config.body(order),
     });
 
     await client.close();
