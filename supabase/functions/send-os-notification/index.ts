@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const SMTP_USER = Deno.env.get("SMTP_USER")!;
@@ -10,68 +10,107 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const EVENT_CONFIG: Record<string, {
-  subject: (os: any) => string;
-  body: (os: any) => string;
-}> = {
+const baseStyles = `
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #1f2937;
+`;
+
+const tableStyles = `width: 100%; border-collapse: collapse; margin: 16px 0;`;
+const cellLabel = `padding: 8px 12px; background: #f3f4f6; font-weight: 600; border: 1px solid #e5e7eb; width: 35%;`;
+const cellValue = `padding: 8px 12px; border: 1px solid #e5e7eb;`;
+const buttonStyles = (color: string) => `
+  display: inline-block;
+  background: ${color};
+  color: #ffffff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 16px;
+`;
+
+function renderRows(rows: Array<[string, string]>): string {
+  return rows
+    .map(
+      ([label, value]) =>
+        `<tr><td style="${cellLabel}">${label}</td><td style="${cellValue}">${value}</td></tr>`
+    )
+    .join("");
+}
+
+const EVENT_CONFIG: Record<
+  string,
+  { subject: (os: any) => string; body: (os: any) => string }
+> = {
   created: {
     subject: (os) => `✅ Nova OS #${os.order_number} criada`,
     body: (os) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #0d9488;">Nova Ordem de Serviço</h2>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Número</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">#${os.order_number}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Título</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.title}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Cliente</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.client_name || "—"}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Tipo</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.service_type || "—"}</td></tr>
-          <tr><td style="padding: 8px;"><strong>Solicitante</strong></td><td style="padding: 8px;">${os.requester_name}</td></tr>
+      <div style="${baseStyles}">
+        <h2 style="color: #0d9488; margin-bottom: 8px;">Nova Ordem de Serviço</h2>
+        <table style="${tableStyles}">
+          ${renderRows([
+            ["Número", `#${os.order_number}`],
+            ["Título", os.title || "—"],
+            ["Cliente", os.client_name || "—"],
+            ["Tipo", os.attendance_type || "—"],
+            ["Solicitante", os.requester_name || "—"],
+          ])}
         </table>
-        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS no sistema</a>
+        <a href="${APP_URL}/os/${os.id}" style="${buttonStyles("#0d9488")}">Ver OS no sistema</a>
       </div>
     `,
   },
   assigned: {
     subject: (os) => `🔧 OS #${os.order_number} atribuída a você`,
     body: (os) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #0d9488;">OS Atribuída a Você</h2>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Número</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">#${os.order_number}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Título</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.title}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Cliente</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.client_name || "—"}</td></tr>
-          <tr><td style="padding: 8px;"><strong>Tipo</strong></td><td style="padding: 8px;">${os.service_type || "—"}</td></tr>
+      <div style="${baseStyles}">
+        <h2 style="color: #0d9488; margin-bottom: 8px;">OS Atribuída a Você</h2>
+        <table style="${tableStyles}">
+          ${renderRows([
+            ["Número", `#${os.order_number}`],
+            ["Título", os.title || "—"],
+            ["Cliente", os.client_name || "—"],
+            ["Tipo", os.attendance_type || "—"],
+          ])}
         </table>
-        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Abrir OS</a>
+        <a href="${APP_URL}/os/${os.id}" style="${buttonStyles("#0d9488")}">Abrir OS</a>
       </div>
     `,
   },
   escalated: {
     subject: (os) => `🚨 OS #${os.order_number} — Prioridade Urgente`,
     body: (os) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #dc2626;">⚠️ OS Escalada para Urgente</h2>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Número</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">#${os.order_number}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Título</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.title}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Cliente</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.client_name || "—"}</td></tr>
-          <tr><td style="padding: 8px;"><strong>Técnico</strong></td><td style="padding: 8px;">${os.assigned_name || "Não atribuído"}</td></tr>
+      <div style="${baseStyles}">
+        <h2 style="color: #dc2626; margin-bottom: 8px;">⚠️ OS Escalada para Urgente</h2>
+        <table style="${tableStyles}">
+          ${renderRows([
+            ["Número", `#${os.order_number}`],
+            ["Título", os.title || "—"],
+            ["Cliente", os.client_name || "—"],
+            ["Técnico", os.assigned_name || "Não atribuído"],
+          ])}
         </table>
-        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver OS urgente</a>
+        <a href="${APP_URL}/os/${os.id}" style="${buttonStyles("#dc2626")}">Ver OS urgente</a>
       </div>
     `,
   },
   completed: {
     subject: (os) => `✔️ OS #${os.order_number} finalizada`,
     body: (os) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #16a34a;">✅ Ordem de Serviço Concluída</h2>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Número</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">#${os.order_number}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Título</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.title}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><strong>Técnico</strong></td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${os.assigned_name || "—"}</td></tr>
-          <tr><td style="padding: 8px;"><strong>Observações</strong></td><td style="padding: 8px;">${os.notes || "—"}</td></tr>
+      <div style="${baseStyles}">
+        <h2 style="color: #16a34a; margin-bottom: 8px;">✅ Ordem de Serviço Concluída</h2>
+        <table style="${tableStyles}">
+          ${renderRows([
+            ["Número", `#${os.order_number}`],
+            ["Título", os.title || "—"],
+            ["Técnico", os.assigned_name || "—"],
+            ["Observações", os.notes || "—"],
+          ])}
         </table>
-        <a href="${APP_URL}/helpdesk/os/${os.id}" style="display: inline-block; background: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Ver detalhes</a>
+        <a href="${APP_URL}/os/${os.id}" style="${buttonStyles("#16a34a")}">Ver detalhes</a>
       </div>
     `,
   },
@@ -116,13 +155,10 @@ serve(async (req) => {
       from: SMTP_USER,
       to: recipient_email,
       subject: config.subject(order),
-      content: "Visualize este e-mail em um cliente compatível com HTML.",
       html: config.body(order),
     });
 
     await client.close();
-
-    console.log(`Email enviado: evento=${event} para=${recipient_email} OS=${order.order_number}`);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
