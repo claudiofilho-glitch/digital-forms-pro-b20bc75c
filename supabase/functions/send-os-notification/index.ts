@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-const SMTP_USER = Deno.env.get("SMTP_USER")!;
-const SMTP_PASS = Deno.env.get("SMTP_PASS")!;
+const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
+const FROM_EMAIL = "Interative <onboarding@resend.dev>";
 const APP_URL = "https://digital-forms-pro.lovable.app";
 
 const corsHeaders = {
@@ -122,6 +121,11 @@ serve(async (req) => {
   }
 
   try {
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY não configurada");
+    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY não configurada");
+
     const { event, order, recipient_email } = await req.json();
 
     if (!event || !order || !recipient_email) {
@@ -139,33 +143,33 @@ serve(async (req) => {
       });
     }
 
-    const client = new SMTPClient({
-      connection: {
-        hostname: "smtp.gmail.com",
-        port: 465,
-        tls: true,
-        auth: {
-          username: SMTP_USER,
-          password: SMTP_PASS,
-        },
+    const res = await fetch(`${GATEWAY_URL}/emails`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "X-Connection-Api-Key": RESEND_API_KEY,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [recipient_email],
+        subject: config.subject(order),
+        html: config.body(order),
+      }),
     });
 
-    await client.send({
-      from: SMTP_USER,
-      to: recipient_email,
-      subject: config.subject(order),
-      html: config.body(order),
-    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("Resend gateway error:", res.status, data);
+      throw new Error(`Resend [${res.status}]: ${JSON.stringify(data)}`);
+    }
 
-    await client.close();
-
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("SMTP error:", err);
+    console.error("send-os-notification error:", err);
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
