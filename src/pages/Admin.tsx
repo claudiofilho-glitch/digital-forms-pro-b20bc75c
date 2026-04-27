@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle, Pencil, Trash2, AlertTriangle, Briefcase } from "lucide-react";
+import { Search, Users, Shield, Wrench, User as UserIcon, PlusCircle, Pencil, Trash2, AlertTriangle, Briefcase, ClipboardList } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
@@ -32,6 +32,7 @@ interface UserRow {
 const ROLE_CONFIG: Record<AppRole, { label: string; icon: typeof Shield; class: string }> = {
   admin: { label: "Administrador", icon: Shield, class: "bg-destructive/15 text-destructive" },
   administrative: { label: "Administrativo", icon: Briefcase, class: "bg-teal-100 text-teal-800" },
+  coordinator: { label: "Coordenador", icon: ClipboardList, class: "bg-amber-100 text-amber-800" },
   technician: { label: "Técnico", icon: Wrench, class: "bg-primary/15 text-primary" },
   user: { label: "Operador", icon: UserIcon, class: "bg-muted text-muted-foreground" },
 };
@@ -282,6 +283,10 @@ export default function Admin() {
                       <Label htmlFor="role-user" className="flex items-center gap-1"><UserIcon className="h-3 w-3" /> Operador</Label>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="coordinator" id="role-coordinator" />
+                      <Label htmlFor="role-coordinator" className="flex items-center gap-1"><ClipboardList className="h-3 w-3" /> Coordenador</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
                       <RadioGroupItem value="technician" id="role-tech" />
                       <Label htmlFor="role-tech" className="flex items-center gap-1"><Wrench className="h-3 w-3" /> Técnico</Label>
                     </div>
@@ -323,6 +328,8 @@ export default function Admin() {
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
             <SelectItem value="admin">Administrador</SelectItem>
+            <SelectItem value="administrative">Administrativo</SelectItem>
+            <SelectItem value="coordinator">Coordenador</SelectItem>
             <SelectItem value="technician">Técnico</SelectItem>
             <SelectItem value="user">Operador</SelectItem>
           </SelectContent>
@@ -374,6 +381,7 @@ export default function Admin() {
                               <SelectContent>
                                 <SelectItem value="admin">Administrador</SelectItem>
                                 <SelectItem value="administrative">Administrativo</SelectItem>
+                                <SelectItem value="coordinator">Coordenador</SelectItem>
                                 <SelectItem value="technician">Técnico</SelectItem>
                                 <SelectItem value="user">Operador</SelectItem>
                               </SelectContent>

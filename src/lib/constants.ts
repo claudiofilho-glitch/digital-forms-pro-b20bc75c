@@ -27,6 +27,7 @@ export const ROLE_CONFIG = {
   technician: { label: "Técnico", class: "bg-blue-100 text-blue-800" },
   user: { label: "Operador", class: "bg-gray-100 text-gray-800" },
   administrative: { label: "Administrativo", class: "bg-teal-100 text-teal-800" },
+  coordinator: { label: "Coordenador", class: "bg-amber-100 text-amber-800" },
 } as const;
 
 export const PRIORITY_MAP = {
