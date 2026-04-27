@@ -66,7 +66,9 @@ export default function OrderDetail() {
   const canEdit =
     role === "admin" ||
     role === "administrative" ||
+    role === "coordinator" ||
     (role === "technician" && order?.assigned_to === user?.id);
+  const canAssign = role === "admin" || role === "administrative" || role === "coordinator";
   const sla = useSlaCountdown(order?.created_at);
   const slaFinished = order?.status === "completed" || order?.status === "cancelled";
 
@@ -338,7 +340,7 @@ export default function OrderDetail() {
             <InfoItem icon={Clock} label="Hora de Conclusão" value={order.completion_date ? new Date(order.completion_date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
           </div>
           {/* Quick assign buttons (visible for admins when not in edit mode too) */}
-          {role === "admin" && order.status !== "completed" && order.status !== "cancelled" && (
+          {canAssign && order.status !== "completed" && order.status !== "cancelled" && (
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3 print:hidden">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <UserPlus className="h-4 w-4" /> Atribuir Técnico

@@ -23,6 +23,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       ? "Administrador"
       : role === "administrative"
       ? "Administrativo"
+      : role === "coordinator"
+      ? "Coordenador"
       : role === "technician"
       ? "Técnico"
       : "Operador";
