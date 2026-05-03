@@ -63,7 +63,8 @@ export default function NewOrder() {
     e.preventDefault();
     if (!user) return;
 
-    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to) {
+    const subtypeRequired = !!SERVICE_SUBTYPES[form.service_type];
+    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to || (subtypeRequired && !form.service_subtype)) {
       toast({ title: "Preencha todos os campos", description: "Todos os campos são obrigatórios.", variant: "destructive" });
       return;
     }
@@ -81,6 +82,7 @@ export default function NewOrder() {
         title: form.title,
         description: form.description,
         service_type: form.service_type,
+        service_subtype: form.service_subtype || null,
         location: form.location,
         scheduled_date: form.scheduled_date || null,
         requester_id: user.id,
@@ -89,7 +91,7 @@ export default function NewOrder() {
         client_name: selectedClient?.name || "",
         assigned_to: form.assigned_to || null,
         assigned_name: selectedTech?.full_name || "",
-      });
+      } as any);
 
       if (error) throw error;
 
