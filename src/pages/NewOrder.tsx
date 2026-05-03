@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { SERVICE_TYPES } from "@/lib/constants";
+import { SERVICE_TYPES, SERVICE_SUBTYPES } from "@/lib/constants";
 
 export default function NewOrder() {
   const { user, profile } = useAuth();
@@ -24,6 +24,7 @@ export default function NewOrder() {
     title: "",
     description: "",
     service_type: "Atendimento Geral",
+    service_subtype: "",
     location: "",
     scheduled_date: "",
     client_id: "",
@@ -62,7 +63,8 @@ export default function NewOrder() {
     e.preventDefault();
     if (!user) return;
 
-    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to) {
+    const subtypeRequired = !!SERVICE_SUBTYPES[form.service_type];
+    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to || (subtypeRequired && !form.service_subtype)) {
       toast({ title: "Preencha todos os campos", description: "Todos os campos são obrigatórios.", variant: "destructive" });
       return;
     }
@@ -80,6 +82,7 @@ export default function NewOrder() {
         title: form.title,
         description: form.description,
         service_type: form.service_type,
+        service_subtype: form.service_subtype || null,
         location: form.location,
         scheduled_date: form.scheduled_date || null,
         requester_id: user.id,
@@ -88,7 +91,7 @@ export default function NewOrder() {
         client_name: selectedClient?.name || "",
         assigned_to: form.assigned_to || null,
         assigned_name: selectedTech?.full_name || "",
-      });
+      } as any);
 
       if (error) throw error;
 
@@ -139,7 +142,7 @@ export default function NewOrder() {
 
             <div className="space-y-2">
               <Label>Tipo de Atendimento *</Label>
-              <Select value={form.service_type} onValueChange={(v) => update("service_type", v)} required>
+              <Select value={form.service_type} onValueChange={(v) => setForm((f) => ({ ...f, service_type: v, service_subtype: "" }))} required>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {SERVICE_TYPES.map((t) => (
@@ -148,6 +151,20 @@ export default function NewOrder() {
                 </SelectContent>
               </Select>
             </div>
+
+            {SERVICE_SUBTYPES[form.service_type] && (
+              <div className="space-y-2">
+                <Label>Subtipo *</Label>
+                <Select value={form.service_subtype} onValueChange={(v) => update("service_subtype", v)} required>
+                  <SelectTrigger><SelectValue placeholder="Selecione o subtipo" /></SelectTrigger>
+                  <SelectContent>
+                    {SERVICE_SUBTYPES[form.service_type].map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">

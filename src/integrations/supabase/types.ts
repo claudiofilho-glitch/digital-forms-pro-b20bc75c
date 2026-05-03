@@ -188,6 +188,7 @@ export type Database = {
           requester_id: string
           requester_name: string
           scheduled_date: string | null
+          service_subtype: string | null
           service_type: string
           status: Database["public"]["Enums"]["os_status"]
           technician_signature: string | null
@@ -215,6 +216,7 @@ export type Database = {
           requester_id: string
           requester_name?: string
           scheduled_date?: string | null
+          service_subtype?: string | null
           service_type?: string
           status?: Database["public"]["Enums"]["os_status"]
           technician_signature?: string | null
@@ -242,6 +244,7 @@ export type Database = {
           requester_id?: string
           requester_name?: string
           scheduled_date?: string | null
+          service_subtype?: string | null
           service_type?: string
           status?: Database["public"]["Enums"]["os_status"]
           technician_signature?: string | null
