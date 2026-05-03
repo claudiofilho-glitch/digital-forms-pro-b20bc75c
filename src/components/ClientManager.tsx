@@ -73,8 +73,17 @@ export default function ClientManager() {
   };
 
   const handleSave = async () => {
-    if (!form.name.trim()) {
-      toast({ title: "Nome é obrigatório", variant: "destructive" });
+    if (
+      !form.name.trim() ||
+      !form.document.trim() ||
+      !form.phone.trim() ||
+      !form.address.trim() ||
+      !form.city.trim() ||
+      !form.contact.trim() ||
+      !form.contact1_phone.trim() ||
+      !form.email.trim()
+    ) {
+      toast({ title: "Preencha todos os campos obrigatórios", description: "Nome, CPF/CNPJ, Telefone, Endereço, Cidade, Contato Principal, Telefone Principal e E-mail Principal são obrigatórios.", variant: "destructive" });
       return;
     }
     setSaving(true);
