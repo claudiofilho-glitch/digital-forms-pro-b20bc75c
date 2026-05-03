@@ -331,7 +331,7 @@ export default function OrderDetail() {
 
           {/* Info grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem icon={Wrench} label="Tipo de Serviço" value={order.service_type} />
+            <InfoItem icon={Wrench} label="Tipo de Serviço" value={(order as any).service_subtype ? `${order.service_type} — ${(order as any).service_subtype}` : order.service_type} />
             <InfoItem icon={Building2} label="Cliente" value={order.client_name || "—"} />
             <InfoItem icon={MapPin} label="Local" value={order.location || "—"} />
             <InfoItem icon={User} label="Solicitante" value={order.requester_name} />
