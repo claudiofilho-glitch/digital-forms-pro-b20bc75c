@@ -191,61 +191,69 @@ export default function ClientManager() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>CPF/CNPJ</Label>
+                  <Label>CPF/CNPJ *</Label>
                   <Input
                     value={form.document}
                     onChange={(e) => update("document", e.target.value)}
                     placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Telefone</Label>
+                  <Label>Telefone *</Label>
                   <Input
                     value={form.phone}
                     onChange={(e) => update("phone", e.target.value)}
                     placeholder="(00) 00000-0000"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Endereço</Label>
+                  <Label>Endereço *</Label>
                   <Input
                     value={form.address}
                     onChange={(e) => update("address", e.target.value)}
                     placeholder="Endereço completo"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Cidade</Label>
+                  <Label>Cidade *</Label>
                   <Input
                     value={form.city}
                     onChange={(e) => update("city", e.target.value)}
                     placeholder="Nome da cidade"
+                    required
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Contato Principal</Label>
+                  <Label>Contato Principal *</Label>
                   <Input
                     value={form.contact}
                     onChange={(e) => update("contact", e.target.value)}
                     placeholder="Nome do contato principal"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Telefone Principal</Label>
+                  <Label>Telefone Principal *</Label>
                   <Input
                     value={form.contact1_phone}
                     onChange={(e) => update("contact1_phone", e.target.value)}
                     placeholder="(00) 00000-0000"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>E-mail Principal</Label>
+                  <Label>E-mail Principal *</Label>
                   <Input
+                    type="email"
                     value={form.email}
                     onChange={(e) => update("email", e.target.value)}
                     placeholder="email@exemplo.com"
+                    required
                   />
                 </div>
               </div>
