@@ -61,6 +61,12 @@ export default function NewOrder() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to) {
+      toast({ title: "Preencha todos os campos", description: "Todos os campos são obrigatórios.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
