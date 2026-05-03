@@ -142,7 +142,7 @@ export default function NewOrder() {
 
             <div className="space-y-2">
               <Label>Tipo de Atendimento *</Label>
-              <Select value={form.service_type} onValueChange={(v) => update("service_type", v)} required>
+              <Select value={form.service_type} onValueChange={(v) => setForm((f) => ({ ...f, service_type: v, service_subtype: "" }))} required>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {SERVICE_TYPES.map((t) => (
@@ -151,6 +151,20 @@ export default function NewOrder() {
                 </SelectContent>
               </Select>
             </div>
+
+            {SERVICE_SUBTYPES[form.service_type] && (
+              <div className="space-y-2">
+                <Label>Subtipo *</Label>
+                <Select value={form.service_subtype} onValueChange={(v) => update("service_subtype", v)} required>
+                  <SelectTrigger><SelectValue placeholder="Selecione o subtipo" /></SelectTrigger>
+                  <SelectContent>
+                    {SERVICE_SUBTYPES[form.service_type].map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
