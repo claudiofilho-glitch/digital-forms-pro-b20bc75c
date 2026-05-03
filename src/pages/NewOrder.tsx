@@ -61,6 +61,12 @@ export default function NewOrder() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    if (!form.client_id || !form.title.trim() || !form.description.trim() || !form.service_type || !form.location.trim() || !form.scheduled_date || !form.assigned_to) {
+      toast({ title: "Preencha todos os campos", description: "Todos os campos são obrigatórios.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -106,8 +112,8 @@ export default function NewOrder() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label>Cliente</Label>
-              <Select value={form.client_id} onValueChange={(v) => update("client_id", v)}>
+              <Label>Cliente *</Label>
+              <Select value={form.client_id} onValueChange={(v) => update("client_id", v)} required>
                 <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
                 <SelectContent>
                   {clients.length === 0 ? (
@@ -127,13 +133,13 @@ export default function NewOrder() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
-              <Textarea id="description" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Descreva brevemente o problema..." rows={4} />
+              <Label htmlFor="description">Descrição *</Label>
+              <Textarea id="description" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Descreva brevemente o problema..." rows={4} required />
             </div>
 
             <div className="space-y-2">
-              <Label>Tipo de Atendimento</Label>
-              <Select value={form.service_type} onValueChange={(v) => update("service_type", v)}>
+              <Label>Tipo de Atendimento *</Label>
+              <Select value={form.service_type} onValueChange={(v) => update("service_type", v)} required>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {SERVICE_TYPES.map((t) => (
@@ -145,25 +151,26 @@ export default function NewOrder() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="location">Local</Label>
-                <Input id="location" value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex: Recepção A" />
+                <Label htmlFor="location">Local *</Label>
+                <Input id="location" value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex: Recepção A" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Data e Hora Previstos</Label>
+                <Label htmlFor="date">Data e Hora Previstos *</Label>
                 <Input
                   id="date"
                   type="datetime-local"
                   value={form.scheduled_date}
                   onChange={(e) => update("scheduled_date", e.target.value)}
                   min={new Date().toISOString().slice(0, 16)}
+                  required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Técnico Responsável</Label>
+              <Label>Técnico Responsável *</Label>
               <div className="flex gap-2">
-                <Select value={form.assigned_to} onValueChange={(v) => update("assigned_to", v)}>
+                <Select value={form.assigned_to} onValueChange={(v) => update("assigned_to", v)} required>
                   <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione um técnico" /></SelectTrigger>
                   <SelectContent>
                     {technicians.map((t) => (
