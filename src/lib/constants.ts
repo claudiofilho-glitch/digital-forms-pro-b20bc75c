@@ -21,6 +21,11 @@ export const SERVICE_TYPE_MAP: Record<string, { label: string; class: string }> 
 
 export const SERVICE_TYPES = Object.keys(SERVICE_TYPE_MAP);
 
+export const SERVICE_SUBTYPES: Record<string, string[]> = {
+  Hardware: ["Catraca", "Fonte", "MCA", "HUB", "Facial"],
+  Software: ["Criar Operador", "Sincronismo", "Configuração"],
+};
+
 // Keep PRIORITY_MAP for backward compat if needed
 export const ROLE_CONFIG = {
   admin: { label: "Administrador", class: "bg-purple-100 text-purple-800" },
