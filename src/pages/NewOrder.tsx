@@ -24,6 +24,7 @@ export default function NewOrder() {
     title: "",
     description: "",
     service_type: "Atendimento Geral",
+    service_subtype: "",
     location: "",
     scheduled_date: "",
     client_id: "",
