@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { SERVICE_TYPES } from "@/lib/constants";
+import { SERVICE_TYPES, SERVICE_SUBTYPES } from "@/lib/constants";
 
 export default function NewOrder() {
   const { user, profile } = useAuth();
