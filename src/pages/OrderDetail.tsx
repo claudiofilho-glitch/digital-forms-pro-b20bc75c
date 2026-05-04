@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import SignaturePad from "@/components/SignaturePad";
 import MaintenanceChecklist from "@/components/MaintenanceChecklist";
+import OSPhotos from "@/components/OSPhotos";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -420,7 +421,16 @@ export default function OrderDetail() {
             </div>
           )}
 
-          {/* Checklist – only for preventive maintenance */}
+          {/* Photos / evidence */}
+          <div className="border-t pt-6">
+            <OSPhotos
+              orderId={order.id}
+              photos={order.photos || []}
+              canEdit={canEdit && order.status !== "cancelled"}
+              onChange={(photos) => setOrder({ ...order, photos })}
+            />
+          </div>
+
           {order.service_type === "Manutenção Preventiva" && (
             <div className="border-t pt-6">
               <MaintenanceChecklist

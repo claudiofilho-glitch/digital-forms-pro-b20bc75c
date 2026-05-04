@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, PlusCircle, LogOut, User, Wrench, Shield } from "lucide-react";
+import { ClipboardList, PlusCircle, LogOut, User, Wrench, Shield, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/b02e6f02-2f51-4e38-a360-184129ade15d.png";
 
@@ -13,6 +13,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { to: "/helpdesk", label: "Ordens de Serviço", icon: ClipboardList },
     { to: "/helpdesk/nova-os", label: "Nova OS", icon: PlusCircle },
+    { to: "/helpdesk/agenda", label: "Agenda", icon: Calendar },
     ...(role === "admin" || role === "administrative"
       ? [{ to: "/helpdesk/admin", label: "Operadores", icon: Shield }]
       : []),
