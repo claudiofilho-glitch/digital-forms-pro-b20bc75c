@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import NewOrder from "@/pages/NewOrder";
 import OrderDetail from "@/pages/OrderDetail";
 import Admin from "@/pages/Admin";
+import Schedule from "@/pages/Schedule";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/helpdesk" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/helpdesk/nova-os" element={<ProtectedRoute><NewOrder /></ProtectedRoute>} />
             <Route path="/helpdesk/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/helpdesk/agenda" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
             <Route path="/helpdesk/os/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
